@@ -7,8 +7,7 @@ import AddIcon from './images/add.svg';
 
 export function generateStaticContent() {
     const body = document.querySelector('body');
-    const highLevelItems = document.createElement('div');
-    highLevelItems.setAttribute('id', 'highLevelItems');
+    const highLevelItems = document.createElement('div').setAttribute('id', 'highLevelItems');
 
     const timeDueSection = document.createElement('div');
     const pastDue = document.createElement('span').setAttribute('id', 'pastDue');
@@ -27,14 +26,26 @@ export function generateStaticContent() {
     timeDueSection.appendChild(todayDue);
     timeDueSection.appendChild(soonDue);
 
+    const projectMenu = document.createElement('div').setAttribute('id', 'projectMenu');
+    const newProjectButton = document.createElement('button').setAttribute('type', 'button');
+    newProjectButton.setAttribute('id', 'newProjectButton');
+    const addIcon = new Image();
+    addIcon.src = AddIcon;
+    newProjectButton.innerHTML = `${addIcon} New Project`;
+    const projectHeadline = document.createElement('h2');
+    projectHeadline.innerHTML = 'Projects'
+    const projectList = document.createElement('div').setAttribute('id', 'projectList');
+    projectMenu.appendChild(newProjectButton);
+    projectMenu.appendChild(projectHeadline);
+    projectMenu.appendChild(projectList);
 
-    const newProjectButton = document.createElement('button');
-    newProjectButton.setAttribute('type', 'button');
+    highLevelItems.appendChild(timeDueSection);
+    highLevelItems.appendChild(projectMenu);
+    body.appendChild(highLevelItems);
 
 
 
 
-    
-    const detailItems = document.createElement('div');
-    detailItems.setAttribute('id', 'detailItems');
+
+    const detailItems = document.createElement('div').setAttribute('id', 'detailItems');
 };
