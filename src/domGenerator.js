@@ -7,37 +7,34 @@ import AddIcon from './images/add.svg';
 
 export function generateStaticContent() {
     const body = document.querySelector('body');
-    const highLevelItems = document.createElement('div').setAttribute('id', 'highLevelItems');
+    const highLevelItems = document.createElement('div');
+    highLevelItems.setAttribute('id', 'highLevelItems');
 
     const timeDueSection = document.createElement('div');
-    const pastDue = document.createElement('span').setAttribute('id', 'pastDue');
-    const pastDueIcon = new Image();
-    pastDueIcon.src = DatePastIcon;
-    pastDue.innerHTML =`${pastDueIcon} Past Due`;
-    const todayDue = document.createElement('span').setAttribute('id', 'todayDue');
-    const todayDueIcon = new Image();
-    todayDueIcon.src = DateTodayIcon;
-    todayDue.innerHTML = `${todayDueIcon} Due Today`;
-    const soonDue = document.createElement('span').setAttribute('id', 'soonDue')
-    const soonDueIcon = new Image();
-    soonDueIcon.src = DateSoonIcon;
-    soonDue.innerHTML = `${soonDueIcon} Due Soon`;
-    timeDueSection.appendChild(pastDue);
-    timeDueSection.appendChild(todayDue);
-    timeDueSection.appendChild(soonDue);
+    const generateSubDiv = function(id, importedIconName, readableWords, parentDiv) {
+        const timeDue = document.createElement('div');
+        timeDue.setAttribute('id', id);
+        const icon = new Image();
+        icon.src = importedIconName;
+        timeDue.appendChild(icon);
+        const timeDueWords = document.createElement('span');
+        timeDueWords.innerHTML += ` ${readableWords}`;
+        timeDue.appendChild(timeDueWords);
+        parentDiv.appendChild(timeDue);
+    };
+    generateSubDiv('pastDue', DatePastIcon, 'Past Due', timeDueSection);
+    generateSubDiv('todayDue', DateTodayIcon, 'Due Today', timeDueSection);
+    generateSubDiv('soonDue', DateSoonIcon, 'Due Soon', timeDueSection);
 
-    const projectMenu = document.createElement('div').setAttribute('id', 'projectMenu');
-    const newProjectButton = document.createElement('button').setAttribute('type', 'button');
-    newProjectButton.setAttribute('id', 'newProjectButton');
-    const addIcon = new Image();
-    addIcon.src = AddIcon;
-    newProjectButton.innerHTML = `${addIcon} New Project`;
+    const projectMenu = document.createElement('div');
+    projectMenu.setAttribute('id', 'projectMenu');
     const projectHeadline = document.createElement('h2');
     projectHeadline.innerHTML = 'Projects'
-    const projectList = document.createElement('div').setAttribute('id', 'projectList');
-    projectMenu.appendChild(newProjectButton);
+    const projectList = document.createElement('div');
+    projectList.setAttribute('id', 'projectList');
     projectMenu.appendChild(projectHeadline);
     projectMenu.appendChild(projectList);
+    generateSubDiv('newProjectButton', AddIcon, 'New Project', projectMenu);
 
     highLevelItems.appendChild(timeDueSection);
     highLevelItems.appendChild(projectMenu);
@@ -47,5 +44,6 @@ export function generateStaticContent() {
 
 
 
-    const detailItems = document.createElement('div').setAttribute('id', 'detailItems');
+    const detailItems = document.createElement('div');
+    detailItems.setAttribute('id', 'detailItems');
 };
