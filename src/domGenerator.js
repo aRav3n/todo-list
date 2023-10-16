@@ -4,6 +4,24 @@ import DateSoonIcon from './images/date-soon.svg';
 import DatePastIcon from './images/date-past.svg';
 import DateGeneralIcon from './images/date-general.svg';
 import AddIcon from './images/add.svg';
+import SaveIcon from './images/save.svg';
+
+const clearParentDiv = function(parentDiv) {
+    parentDiv.innerHTML = ''
+};
+
+const makeNewDivButton = function(id, importedIconName, label, parentDiv) {
+    const divButton = document.createElement('div');
+    divButton.setAttribute('id', id);
+    const icon = new Image();
+    icon.src = importedIconName;
+    divButton.appendChild(icon);
+    const divButtonLabel = document.createElement('span');
+    divButtonLabel.innerHTML += ` ${label}`;
+    divButton.appendChild(divButtonLabel);
+    divButton.classList.add('divButton');
+    parentDiv.appendChild(divButton);
+}
 
 export function generateStaticContent() {
     const body = document.querySelector('body');
@@ -34,16 +52,41 @@ export function generateStaticContent() {
     projectList.setAttribute('id', 'projectList');
     projectMenu.appendChild(projectHeadline);
     projectMenu.appendChild(projectList);
-    generateSubDiv('newProjectButton', AddIcon, 'New Project', projectMenu);
+
+    makeNewDivButton('newProjectButton', AddIcon, 'New Project', projectMenu);
 
     highLevelItems.appendChild(timeDueSection);
     highLevelItems.appendChild(projectMenu);
     body.appendChild(highLevelItems);
 
-
-
-
-
     const detailItems = document.createElement('div');
     detailItems.setAttribute('id', 'detailItems');
+    body.appendChild(detailItems);
+};
+
+export function generateSectionToCreateNewProject(parentDiv) {
+    clearParentDiv(parentDiv);
+    const generateNewInputSection = function(type, id, labelText) {
+        const inputField = document.createElement('input');
+        inputField.setAttribute('type', type);
+        inputField.setAttribute('id', id);
+        inputField.setAttribute('name', id);
+        const fieldLabel = document.createElement('label');
+        fieldLabel.setAttribute('for', id);
+        fieldLabel.innerHTML = labelText;
+        fieldLabel.appendChild(inputField);
+        parentDiv.appendChild(fieldLabel);
+    };
+    const descriptionSection = document.createElement('label');
+    descriptionSection.setAttribute('for', 'newProjectDescription');
+    descriptionSection.innerHTML = 'Description';
+    const descriptionSectionText = document.createElement('textarea');
+    descriptionSectionText.setAttribute('id', 'newProjectDescription');
+    descriptionSectionText.setAttribute('placeholder', 'Project description here...');
+    descriptionSection.appendChild(descriptionSectionText);
+
+    generateNewInputSection('text', 'newProjectName', 'Project Name');
+    parentDiv.appendChild(descriptionSection);
+    generateNewInputSection('date', 'newProjectDate', 'Due Date');
+    const saveButton = makeNewDivButton('saveNewProject', SaveIcon, 'Save', parentDiv);
 };

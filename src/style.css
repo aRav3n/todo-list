@@ -9,6 +9,51 @@ body {
     min-height: 100vh;
 }
 
+#detailItems {
+    align-content: start;
+    align-items: start;
+    display: grid;
+    gap: 3vh;
+    justify-content: center;
+    padding: 5vh 3vw;
+}
+
+#detailItems > label {
+    display: grid;
+}
+
+#detailItems textarea {
+    height: 20vh;
+    resize: none;
+    width: 40vw;
+}
+
+.divButton {
+    align-content: center;
+    align-items: center;
+    background-color: #00ff334e;
+    border: 1px solid #ffffff00;
+    border-radius: 0.5rem;
+    display: flex;
+    gap: 4px;
+    justify-self: center;
+    padding: 0.25rem 0.75rem 0.25rem 0.25rem;
+}
+
+.divButton:hover {
+    background-color: #fbff004e;
+    border: 1px solid #00000057;
+}
+
+.divButton > img {
+    height: 1.5rem;
+    width: auto;
+}
+
+.divButton > span {
+    margin-top: .25rem;
+}
+
 #highLevelItems {
     background-color: #d9deda;
 }
@@ -31,31 +76,32 @@ body {
 #highLevelItems > div:first-child > div {
     align-content: center;
     align-items: center;
+    border-radius: 6px;
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 6px;
+    padding: 4px;
+}
+
+#highLevelItems > div:first-child > div:hover {
+    background-color: #00000010;
 }
 
 #highLevelItems > div:first-child > div > span {
     margin-top: .25rem;
 }
 
-#newProjectButton {
-    align-content: center;
-    align-items: center;
-    background-color: #00ff334e;
-    border-radius: 0.5rem;
-    display: flex;
-    justify-self: center;
-    padding: 0.25rem 0.75rem 0.25rem 0.25rem;
+label {
+    font-weight: bold;
+    justify-content: center;
+    justify-items: center;
 }
 
-#newProjectButton:hover {
-    background-color: #fbff004e;
-}
-
-#newProjectButton > span {
-    margin-top: .25rem;
+label > * {
+    border: 1px solid #00000057;
+    border-radius: 1vmin;
+    font-weight: normal;
+    padding: 1vmin;
 }
 
 #projectMenu > h2 {
