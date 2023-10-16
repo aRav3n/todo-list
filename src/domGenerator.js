@@ -7,7 +7,7 @@ import ArrowIcon from './images/chevron-forward-outline.svg';
 import HomeIcon from './images/home.svg';
 import AddIcon from './images/add.svg';
 import SaveIcon from './images/save.svg';
-import {generateNewProject, insertIntoList, projectList} from './projectsAndTasks.js';
+import {generateNewProject, generateNewTask, insertIntoList, projectList, taskList} from './projectsAndTasks.js';
 import {format} from 'date-fns';
 
 function clearParentDiv(parentDiv) {
@@ -16,6 +16,10 @@ function clearParentDiv(parentDiv) {
 
 function createHomeButton(parent) {
     makeNewDivButton('homeButton', HomeIcon, 'Home', parent);
+    const homeButton = document.querySelector('#homeButton');
+    homeButton.addEventListener('click', () => {
+        generateMainContent();
+    });
 };
 
 function makeNewDivButton(id, importedIconName, label, parentDiv) {
@@ -72,7 +76,8 @@ function generateProjectDetailView(project) {
     const projectDescription = document.createElement('h3');
     projectDescription.innerHTML = project.description;
     parent.appendChild(projectDescription);
-
+    const displayedTaskList = document.createElement('div');
+    
 };
 
 function generateSectionToCreateNewProject(parentDiv) {

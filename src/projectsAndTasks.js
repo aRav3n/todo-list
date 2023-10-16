@@ -1,14 +1,19 @@
 import {compareAsc, parseISO} from 'date-fns';
 
 export const projectList = [];
+export const taskList = [];
 const lifeProject = generateNewProject('Life', 'General life tasks', '2200-01-01');
 insertIntoList(lifeProject, projectList);
 
 export function generateNewProject(name, description, dueDate) {
     const id = `project-${projectList.length + 1}`;
-    const taskList = [];
-    return {name, description, dueDate, taskList, id};
+    return {name, description, dueDate, id};
 };
+
+export function generateNewTask(name, description, dueDate, parentId) {
+    const id = `task-${taskList.length + 1}`;
+    return {name, description, dueDate, id, parentId};
+}
 
 export function insertIntoList(item, list) {
     const oldDate = item.dueDate;
