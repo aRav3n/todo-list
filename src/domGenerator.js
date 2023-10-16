@@ -4,15 +4,21 @@ import DateSoonIcon from './images/date-soon.svg';
 import DatePastIcon from './images/date-past.svg';
 import DateGeneralIcon from './images/date-general.svg';
 import ArrowIcon from './images/chevron-forward-outline.svg';
+import HomeIcon from './images/home.svg';
 import AddIcon from './images/add.svg';
 import SaveIcon from './images/save.svg';
-import {generateNewProject, insertIntoProjectList, projectList} from './projectsAndTasks.js';
+import {generateNewProject, insertIntoList, projectList} from './projectsAndTasks.js';
+import {format} from 'date-fns';
 
-const clearParentDiv = function(parentDiv) {
+function clearParentDiv(parentDiv) {
     parentDiv.innerHTML = ''
 };
 
-const makeNewDivButton = function(id, importedIconName, label, parentDiv) {
+function createHomeButton(parent) {
+    makeNewDivButton('homeButton', HomeIcon, 'Home', parent);
+};
+
+function makeNewDivButton(id, importedIconName, label, parentDiv) {
     const divButton = document.createElement('div');
     divButton.setAttribute('id', id);
     const icon = new Image();
@@ -51,20 +57,39 @@ export function generateMainContent() {
 };
 
 function generateProjectDetailView(project) {
-    const parentDiv = document.querySelector('#detailItems');
-    
+    const parent = document.querySelector('#detailItems');
+    clearParentDiv(parent);
+    createHomeButton(parent);
+    let newRow = document.createElement('div');
+    newRow.classList.add('spreadOutItems');
+    generateSubDiv('deleteProject', DeleteIcon, 'Delete Project', newRow);
+    const displayDate = format(project.dueDate, 'MM/dd/yyyy');
+    generateSubDiv('', DateGeneralIcon, `Due: ${displayDate}`, newRow);
+    parent.appendChild(newRow);
+    const projectName = document.createElement('h1');
+    projectName.innerHTML = project.name;
+    parent.appendChild(projectName);
+    const projectDescription = document.createElement('h3');
+    projectDescription.innerHTML = project.description;
+    parent.appendChild(projectDescription);
+
 };
 
 function generateSectionToCreateNewProject(parentDiv) {
     clearParentDiv(parentDiv);
-    function generateNewInputSection(type, id, labelText) {
+    function generateNewInputSection(type, id, labelText, required) {
         const inputField = document.createElement('input');
         inputField.setAttribute('type', type);
         inputField.setAttribute('id', id);
         inputField.setAttribute('name', id);
+        inputField.setAttribute('placeholder', labelText);
         const fieldLabel = document.createElement('label');
         fieldLabel.setAttribute('for', id);
         fieldLabel.innerHTML = labelText;
+        if (required === 'Y'){
+            inputField.required = true;
+            fieldLabel.innerHTML += ' *'
+        };
         fieldLabel.appendChild(inputField);
         parentDiv.appendChild(fieldLabel);
     };
@@ -76,19 +101,32 @@ function generateSectionToCreateNewProject(parentDiv) {
     descriptionSectionText.setAttribute('placeholder', 'Project description here...');
     descriptionSection.appendChild(descriptionSectionText);
 
-    generateNewInputSection('text', 'newProjectName', 'Project Name');
+    generateNewInputSection('text', 'newProjectName', 'Project Name', 'Y');
     parentDiv.appendChild(descriptionSection);
-    generateNewInputSection('date', 'newProjectDate', 'Due Date');
+    generateNewInputSection('date', 'newProjectDate', 'Due Date', 'Y');
     makeNewDivButton('saveNewProject', SaveIcon, 'Save', parentDiv);
 
     const saveButton = document.querySelector('#saveNewProject');
     saveButton.addEventListener('click', () => {
-        const name = document.querySelector('#newProjectName').value;
-        const description = document.querySelector('#newProjectDescription').value;
-        const dueDate = document.querySelector('#newProjectDate').value;
-        const newProjectObject = generateNewProject(name, description, dueDate);
-        insertIntoProjectList(newProjectObject);
-        generateMainContent();
+        let failed = 0;
+        const name = document.querySelector('#newProjectName');
+        if (name.value === ''){
+            name.setAttribute('placeholder', '*** Required ***');
+            name.classList.add('validationFailed');
+            failed ++;
+        };
+        const description = document.querySelector('#newProjectDescription');
+        const dueDate = document.querySelector('#newProjectDate');
+        if (dueDate.value === ''){
+            dueDate.setAttribute('placeholder', '*** Required ***');
+            dueDate.classList.add('validationFailed');
+            failed ++;
+        };
+        const newProjectObject = generateNewProject(name.value, description.value, dueDate.value);
+        if (failed === 0) {
+            insertIntoList(newProjectObject, projectList);
+            generateMainContent();
+        };
     });
 };
 

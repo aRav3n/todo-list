@@ -96,10 +96,18 @@ label {
 }
 
 label > * {
+    appearance: none;
+    border: none;
     border: 1px solid #00000057;
     border-radius: 1vmin;
     font-weight: normal;
     padding: 1vmin;
+}
+
+label > *:focus-visible {
+    appearance: none;
+    border-color: blue;
+    outline: none;
 }
 
 #listOfProjects > div {
@@ -123,4 +131,19 @@ label > * {
 
 span {
     max-width: 100%;
+}
+
+.validationFailed {
+    appearance: none;
+    background-color: #ff000044;
+    border-color: red;
+    outline: none;
+}
+
+.validationFailed::placeholder,
+.validationFailed::-webkit-input-placeholder,
+.validationFailed::-moz-placeholder {
+    text-align: center;
+    justify-content: center;
+    justify-items: center;
 }
