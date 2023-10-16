@@ -1,8 +1,8 @@
 import './style.css';
-import {generateStaticContent, generateSectionToCreateNewProject, } from './domGenerator.js';
+import {generateMainContent, generateSectionToCreateNewProject, } from './domGenerator.js';
 
 window.addEventListener('DOMContentLoaded', () => {
-    generateStaticContent();
+    generateMainContent();
     const detailItemsSection = document.querySelector('#detailItems');
 
     const newProjectButton = document.querySelector('#newProjectButton');

@@ -21,9 +21,9 @@ const makeNewDivButton = function(id, importedIconName, label, parentDiv) {
     divButton.appendChild(divButtonLabel);
     divButton.classList.add('divButton');
     parentDiv.appendChild(divButton);
-}
+};
 
-export function generateStaticContent() {
+function generateStaticContent() {
     const body = document.querySelector('body');
     const highLevelItems = document.createElement('div');
     highLevelItems.setAttribute('id', 'highLevelItems');
@@ -57,11 +57,19 @@ export function generateStaticContent() {
 
     highLevelItems.appendChild(timeDueSection);
     highLevelItems.appendChild(projectMenu);
-    body.appendChild(highLevelItems);
 
     const detailItems = document.createElement('div');
     detailItems.setAttribute('id', 'detailItems');
+
+    body.innerHTML = '';
+    body.appendChild(highLevelItems);
     body.appendChild(detailItems);
+
+};
+
+export function generateMainContent() {
+    generateStaticContent();
+    
 };
 
 export function generateSectionToCreateNewProject(parentDiv) {
