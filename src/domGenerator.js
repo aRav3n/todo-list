@@ -37,13 +37,22 @@ function generateListOfProjects() {
     const parentDiv = document.querySelector('#listOfProjects');
     let i = 1;
     projectList.forEach(project => {
-        generateSubDiv(`project-${i}`, ArrowIcon, project.name, parentDiv);
+        generateSubDiv(project.id, ArrowIcon, project.name, parentDiv);
+        const clickableSubDiv = document.querySelector(`#${project.id}`);
+        clickableSubDiv.addEventListener('click', () => {
+            generateProjectDetailView(project);
+        });
     });
 };
 
 export function generateMainContent() {
     generateStaticContent();
+    generateListOfProjects();
+};
 
+function generateProjectDetailView(project) {
+    const parentDiv = document.querySelector('#detailItems');
+    
 };
 
 function generateSectionToCreateNewProject(parentDiv) {
