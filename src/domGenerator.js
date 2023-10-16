@@ -3,8 +3,10 @@ import DateTodayIcon from './images/date-today.svg';
 import DateSoonIcon from './images/date-soon.svg';
 import DatePastIcon from './images/date-past.svg';
 import DateGeneralIcon from './images/date-general.svg';
+import ArrowIcon from './images/chevron-forward-outline.svg';
 import AddIcon from './images/add.svg';
 import SaveIcon from './images/save.svg';
+import {generateNewProject, insertIntoProjectList, projectList} from './projectsAndTasks.js';
 
 const clearParentDiv = function(parentDiv) {
     parentDiv.innerHTML = ''
@@ -23,58 +25,30 @@ const makeNewDivButton = function(id, importedIconName, label, parentDiv) {
     parentDiv.appendChild(divButton);
 };
 
-function generateStaticContent() {
-    const body = document.querySelector('body');
-    const highLevelItems = document.createElement('div');
-    highLevelItems.setAttribute('id', 'highLevelItems');
+function listenForNewProject() {
+    const newProjectButton = document.querySelector('#newProjectButton');
+    const detailItemsSection = document.querySelector('#detailItems');
+    newProjectButton.addEventListener('click', () => {
+        generateSectionToCreateNewProject(detailItemsSection);
+    });
+};
 
-    const timeDueSection = document.createElement('div');
-    const generateSubDiv = function(id, importedIconName, readableWords, parentDiv) {
-        const timeDue = document.createElement('div');
-        timeDue.setAttribute('id', id);
-        const icon = new Image();
-        icon.src = importedIconName;
-        timeDue.appendChild(icon);
-        const timeDueWords = document.createElement('span');
-        timeDueWords.innerHTML += ` ${readableWords}`;
-        timeDue.appendChild(timeDueWords);
-        parentDiv.appendChild(timeDue);
-    };
-    generateSubDiv('pastDue', DatePastIcon, 'Past Due', timeDueSection);
-    generateSubDiv('todayDue', DateTodayIcon, 'Due Today', timeDueSection);
-    generateSubDiv('soonDue', DateSoonIcon, 'Due Soon', timeDueSection);
-
-    const projectMenu = document.createElement('div');
-    projectMenu.setAttribute('id', 'projectMenu');
-    const projectHeadline = document.createElement('h2');
-    projectHeadline.innerHTML = 'Projects'
-    const projectList = document.createElement('div');
-    projectList.setAttribute('id', 'projectList');
-    projectMenu.appendChild(projectHeadline);
-    projectMenu.appendChild(projectList);
-
-    makeNewDivButton('newProjectButton', AddIcon, 'New Project', projectMenu);
-
-    highLevelItems.appendChild(timeDueSection);
-    highLevelItems.appendChild(projectMenu);
-
-    const detailItems = document.createElement('div');
-    detailItems.setAttribute('id', 'detailItems');
-
-    body.innerHTML = '';
-    body.appendChild(highLevelItems);
-    body.appendChild(detailItems);
-
+function generateListOfProjects() {
+    const parentDiv = document.querySelector('#listOfProjects');
+    let i = 1;
+    projectList.forEach(project => {
+        generateSubDiv(`project-${i}`, ArrowIcon, project.name, parentDiv);
+    });
 };
 
 export function generateMainContent() {
     generateStaticContent();
-    
+
 };
 
-export function generateSectionToCreateNewProject(parentDiv) {
+function generateSectionToCreateNewProject(parentDiv) {
     clearParentDiv(parentDiv);
-    const generateNewInputSection = function(type, id, labelText) {
+    function generateNewInputSection(type, id, labelText) {
         const inputField = document.createElement('input');
         inputField.setAttribute('type', type);
         inputField.setAttribute('id', id);
@@ -96,5 +70,60 @@ export function generateSectionToCreateNewProject(parentDiv) {
     generateNewInputSection('text', 'newProjectName', 'Project Name');
     parentDiv.appendChild(descriptionSection);
     generateNewInputSection('date', 'newProjectDate', 'Due Date');
-    const saveButton = makeNewDivButton('saveNewProject', SaveIcon, 'Save', parentDiv);
+    makeNewDivButton('saveNewProject', SaveIcon, 'Save', parentDiv);
+
+    const saveButton = document.querySelector('#saveNewProject');
+    saveButton.addEventListener('click', () => {
+        const name = document.querySelector('#newProjectName').value;
+        const description = document.querySelector('#newProjectDescription').value;
+        const dueDate = document.querySelector('#newProjectDate').value;
+        const newProjectObject = generateNewProject(name, description, dueDate);
+        insertIntoProjectList(newProjectObject);
+        generateMainContent();
+    });
+};
+
+function generateStaticContent() {
+    const body = document.querySelector('body');
+    const highLevelItems = document.createElement('div');
+    highLevelItems.setAttribute('id', 'highLevelItems');
+
+    const timeDueSection = document.createElement('div');
+    generateSubDiv('pastDue', DatePastIcon, 'Past Due', timeDueSection);
+    generateSubDiv('todayDue', DateTodayIcon, 'Due Today', timeDueSection);
+    generateSubDiv('soonDue', DateSoonIcon, 'Due Soon', timeDueSection);
+
+    const projectMenu = document.createElement('div');
+    projectMenu.setAttribute('id', 'projectMenu');
+    const projectHeadline = document.createElement('h2');
+    projectHeadline.innerHTML = 'Projects'
+    const listOfProjects = document.createElement('div');
+    listOfProjects.setAttribute('id', 'listOfProjects');
+    projectMenu.appendChild(projectHeadline);
+    projectMenu.appendChild(listOfProjects);
+
+    makeNewDivButton('newProjectButton', AddIcon, 'New Project', projectMenu);
+
+    highLevelItems.appendChild(timeDueSection);
+    highLevelItems.appendChild(projectMenu);
+
+    const detailItems = document.createElement('div');
+    detailItems.setAttribute('id', 'detailItems');
+
+    body.innerHTML = '';
+    body.appendChild(highLevelItems);
+    body.appendChild(detailItems);
+    listenForNewProject();
+};
+
+function generateSubDiv(id, importedIconName, readableWords, parentDiv) {
+    const subDiv = document.createElement('div');
+    subDiv.setAttribute('id', id);
+    const icon = new Image();
+    icon.src = importedIconName;
+    subDiv.appendChild(icon);
+    const divText = document.createElement('span');
+    divText.innerHTML += ` ${readableWords}`;
+    subDiv.appendChild(divText);
+    parentDiv.appendChild(subDiv);
 };
