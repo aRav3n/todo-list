@@ -11,13 +11,37 @@ body {
     min-height: 100vh;
 }
 
+#deleteProject {
+    background-color: #ff000037;
+    border-color: #00000010;
+}
+
+#deleteProject:hover {
+    background-color: #ff00009e;
+}
+
 #detailItems {
     align-content: start;
     align-items: start;
     display: grid;
-    gap: 3vh;
-    justify-content: center;
+    gap: 2vh;
+    justify-content: stretch;
     padding: 5vh 3vw;
+}
+
+#detailItems h2 {
+    align-items: center;
+    justify-content: space-between;
+    display: flex;
+    font-size: large;
+    font-weight: bold;
+    justify-self: center;
+    width: 70%;
+}
+
+#detailItems h2 * {
+    font-size: 1rem;
+    font-weight: normal;
 }
 
 #detailItems > label {
@@ -33,8 +57,8 @@ body {
 .divButton {
     align-content: center;
     align-items: center;
-    background-color: #00ff334e;
-    border: 1px solid #ffffff00;
+    background-color: #00ff3337;
+    border: 1px solid #00000010;
     border-radius: 0.5rem;
     display: flex;
     gap: 4px;
@@ -43,13 +67,24 @@ body {
 }
 
 .divButton:hover {
-    background-color: #fbff004e;
-    border: 1px solid #00000057;
+    background-color: #00ff339e;
+    border-color: #00000000;
 }
 
 .divButton > img {
     height: 1.5rem;
     width: auto;
+}
+
+h1 {
+    font-size: larger;
+    font-weight: bold;
+}
+
+h1,
+h3 {
+    margin: 0;
+    text-align: center;
 }
 
 #highLevelItems {
@@ -83,6 +118,10 @@ body {
 
 #highLevelItems > div:first-child > div:hover {
     background-color: #00000010;
+}
+
+#homeButton {
+    justify-self: start;
 }
 
 img + span {
@@ -131,6 +170,29 @@ label > *:focus-visible {
 
 span {
     max-width: 100%;
+}
+
+.spreadOutItems {
+    display: flex;
+    justify-content: space-between;
+}
+
+.spreadOutItems > * {
+    align-content: center;
+    align-items: center;
+    border: 1px solid #ffffff00;
+    border-radius: 0.5rem;
+    display: flex;
+    gap: 4px;
+    height: 1.5rem;
+    padding: 0.25rem 0.75rem 0.25rem 0.25rem;
+    width: auto;
+}
+
+.spreadOutItems img {
+    aspect-ratio: 1 / 1;
+    height: 1.25rem;
+    width: auto;
 }
 
 .validationFailed {
