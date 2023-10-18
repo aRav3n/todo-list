@@ -10,9 +10,8 @@ export function generateNewProject(name, description, dueDate) {
     return {name, description, dueDate, id};
 };
 
-export function generateNewTask(name, description, dueDate, parentId) {
-    const id = `task-${taskList.length + 1}`;
-    return {name, description, dueDate, id, parentId};
+export function generateNewTask(name, dueDate, parentId) {
+    return {name, dueDate, parentId};
 }
 
 export function insertIntoList(item, list) {

@@ -60,6 +60,23 @@ export function generateMainContent() {
     generateListOfProjects();
 };
 
+function generateNewInputSection(type, id, labelText, required) {
+    const inputField = document.createElement('input');
+    inputField.setAttribute('type', type);
+    inputField.setAttribute('id', id);
+    inputField.setAttribute('name', id);
+    inputField.setAttribute('placeholder', labelText);
+    const fieldLabel = document.createElement('label');
+    fieldLabel.setAttribute('for', id);
+    fieldLabel.innerHTML = labelText;
+    if (required === 'Y'){
+        inputField.required = true;
+        fieldLabel.innerHTML += ' *'
+    };
+    fieldLabel.appendChild(inputField);
+    return fieldLabel;
+};
+
 function generateProjectDetailView(project) {
     const parent = document.querySelector('#detailItems');
     clearParentDiv(parent);
@@ -76,28 +93,11 @@ function generateProjectDetailView(project) {
     const projectDescription = document.createElement('h3');
     projectDescription.innerHTML = project.description;
     parent.appendChild(projectDescription);
-    const displayedTaskList = document.createElement('div');
-    
+    generateSubTaskList(parent, project);
 };
 
 function generateSectionToCreateNewProject(parentDiv) {
     clearParentDiv(parentDiv);
-    function generateNewInputSection(type, id, labelText, required) {
-        const inputField = document.createElement('input');
-        inputField.setAttribute('type', type);
-        inputField.setAttribute('id', id);
-        inputField.setAttribute('name', id);
-        inputField.setAttribute('placeholder', labelText);
-        const fieldLabel = document.createElement('label');
-        fieldLabel.setAttribute('for', id);
-        fieldLabel.innerHTML = labelText;
-        if (required === 'Y'){
-            inputField.required = true;
-            fieldLabel.innerHTML += ' *'
-        };
-        fieldLabel.appendChild(inputField);
-        parentDiv.appendChild(fieldLabel);
-    };
     const descriptionSection = document.createElement('label');
     descriptionSection.setAttribute('for', 'newProjectDescription');
     descriptionSection.innerHTML = 'Description';
@@ -106,9 +106,9 @@ function generateSectionToCreateNewProject(parentDiv) {
     descriptionSectionText.setAttribute('placeholder', 'Project description here...');
     descriptionSection.appendChild(descriptionSectionText);
 
-    generateNewInputSection('text', 'newProjectName', 'Project Name', 'Y');
+    parentDiv.appendChild(generateNewInputSection('text', 'newProjectName', 'Project Name', 'Y'));
     parentDiv.appendChild(descriptionSection);
-    generateNewInputSection('date', 'newProjectDate', 'Due Date', 'Y');
+    parentDiv.appendChild(generateNewInputSection('date', 'newProjectDate', 'Due Date', 'Y'));
     makeNewDivButton('saveNewProject', SaveIcon, 'Save', parentDiv);
 
     const saveButton = document.querySelector('#saveNewProject');
@@ -133,6 +133,19 @@ function generateSectionToCreateNewProject(parentDiv) {
             generateMainContent();
         };
     });
+};
+
+function generateSectionToCreateNewTask(parent, project) {
+    const newTaskDiv = document.createElement('div');
+    newTaskDiv.setAttribute('id', 'newTaskDiv');
+    const heading = document.createElement('h2');
+    heading.innerHTML = 'New Task';
+    newTaskDiv.appendChild(heading);
+    newTaskDiv.appendChild(generateNewInputSection('text', 'newTaskName', 'Task Name', 'Y'));
+    newTaskDiv.appendChild(generateNewInputSection('date', 'newTaskDueDate', 'Due Date', 'Y'));
+    makeNewDivButton('saveNewTask', SaveIcon, 'Save', newTaskDiv);
+    parent.appendChild(newTaskDiv);
+    saveNewTask('saveNewTask', 'newTaskName', 'newTaskDueDate', project.id);
 };
 
 function generateStaticContent() {
@@ -179,3 +192,27 @@ function generateSubDiv(id, importedIconName, readableWords, parentDiv) {
     subDiv.appendChild(divText);
     parentDiv.appendChild(subDiv);
 };
+
+function generateSubTaskList(parent, project) {
+    const heading = document.createElement('h2');
+    heading.innerHTML = 'Current Tasks';
+    makeNewDivButton('addTask', AddIcon, 'Add Task', heading);
+    parent.appendChild(heading);
+    const addTaskButton = document.querySelector('#addTask');
+    const taskDisplaySection = document.createElement('div');
+    parent.appendChild(taskDisplaySection);
+
+    addTaskButton.addEventListener('click', () => {
+        generateSectionToCreateNewTask(parent, project);
+    });
+};
+
+function saveNewTask(saveButtonId, taskNameInputId, dueDateInputId, parentId) {
+    const saveButton = document.querySelector(`#${saveButtonId}`);
+    saveButton.addEventListener('click', () => {
+        const taskName = document.querySelector(`#${taskNameInputId}`).value;
+        const dueDate = document.querySelector(`#${dueDateInputId}`).value;
+        const newTask = generateNewTask(taskName, dueDate, parentId);
+        insertIntoList(newTask, taskList);
+    });
+}
