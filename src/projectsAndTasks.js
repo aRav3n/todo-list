@@ -7,12 +7,14 @@ const lifeProject = generateNewProject('Life', 'General life tasks', '2200-01-01
 insertIntoList(lifeProject, projectList);
 
 export function generateNewProject(name, description, dueDate) {
+    let completed = false;
     const id = `project-${projectList.length + 1}`;
-    return {name, description, dueDate, id};
+    return {name, description, dueDate, id, completed};
 };
 
 function generateNewTask(name, dueDate, parentId) {
-    return {name, dueDate, parentId};
+    let completed = false;
+    return {name, dueDate, parentId, completed};
 }
 
 export function insertIntoList(item, list) {
@@ -24,6 +26,14 @@ export function insertIntoList(item, list) {
         list.sort((a,b) => compareAsc(a.dueDate, b.dueDate));
     };
 };
+
+export function listenForCompletedTask(task, checkboxId, project) {
+    const checkBox = document.querySelector(`#${checkboxId}`);
+    checkBox.addEventListener('click', () => {
+        task.completed = true;
+        generateProjectDetailView(project);
+    });
+}
 
 export function saveNewProject(saveButtonId) {
     const saveButton = document.querySelector(`#${saveButtonId}`);
@@ -48,12 +58,11 @@ export function saveNewTask(saveButtonId, taskNameInputId, dueDateInputId, proje
             const newTask = generateNewTask(name.value, dueDate.value, project.id);
             insertIntoList(newTask, taskList);
             generateProjectDetailView(project);
-            console.log(newTask);
         };
     });
 };
 
-// Enter as arguments JavaScript elements, i.e. enter item for const item = document.querySelector....
+// Enter as arguments JavaScript elements, i.e. enter ITEM for const ITEM = document.querySelector....
 function validateRequiredFields() {
     let failed = 0;
     for (let i = 0; i < arguments.length; i++) {
