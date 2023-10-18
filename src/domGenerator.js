@@ -7,7 +7,7 @@ import ArrowIcon from './images/chevron-forward-outline.svg';
 import HomeIcon from './images/home.svg';
 import AddIcon from './images/add.svg';
 import SaveIcon from './images/save.svg';
-import {generateNewProject, generateNewTask, insertIntoList, projectList, taskList} from './projectsAndTasks.js';
+import {projectList, taskList, saveNewProject, saveNewTask} from './projectsAndTasks.js';
 import {format} from 'date-fns';
 
 function clearParentDiv(parentDiv) {
@@ -77,7 +77,7 @@ function generateNewInputSection(type, id, labelText, required) {
     return fieldLabel;
 };
 
-function generateProjectDetailView(project) {
+export function generateProjectDetailView(project) {
     const parent = document.querySelector('#detailItems');
     clearParentDiv(parent);
     createHomeButton(parent);
@@ -110,29 +110,7 @@ function generateSectionToCreateNewProject(parentDiv) {
     parentDiv.appendChild(descriptionSection);
     parentDiv.appendChild(generateNewInputSection('date', 'newProjectDate', 'Due Date', 'Y'));
     makeNewDivButton('saveNewProject', SaveIcon, 'Save', parentDiv);
-
-    const saveButton = document.querySelector('#saveNewProject');
-    saveButton.addEventListener('click', () => {
-        let failed = 0;
-        const name = document.querySelector('#newProjectName');
-        if (name.value === ''){
-            name.setAttribute('placeholder', '*** Required ***');
-            name.classList.add('validationFailed');
-            failed ++;
-        };
-        const description = document.querySelector('#newProjectDescription');
-        const dueDate = document.querySelector('#newProjectDate');
-        if (dueDate.value === ''){
-            dueDate.setAttribute('placeholder', '*** Required ***');
-            dueDate.classList.add('validationFailed');
-            failed ++;
-        };
-        const newProjectObject = generateNewProject(name.value, description.value, dueDate.value);
-        if (failed === 0) {
-            insertIntoList(newProjectObject, projectList);
-            generateMainContent();
-        };
-    });
+    saveNewProject('saveNewProject');
 };
 
 function generateSectionToCreateNewTask(parent, project) {
@@ -145,7 +123,7 @@ function generateSectionToCreateNewTask(parent, project) {
     newTaskDiv.appendChild(generateNewInputSection('date', 'newTaskDueDate', 'Due Date', 'Y'));
     makeNewDivButton('saveNewTask', SaveIcon, 'Save', newTaskDiv);
     parent.appendChild(newTaskDiv);
-    saveNewTask('saveNewTask', 'newTaskName', 'newTaskDueDate', project.id);
+    saveNewTask('saveNewTask', 'newTaskName', 'newTaskDueDate', project);
 };
 
 function generateStaticContent() {
@@ -206,13 +184,3 @@ function generateSubTaskList(parent, project) {
         generateSectionToCreateNewTask(parent, project);
     });
 };
-
-function saveNewTask(saveButtonId, taskNameInputId, dueDateInputId, parentId) {
-    const saveButton = document.querySelector(`#${saveButtonId}`);
-    saveButton.addEventListener('click', () => {
-        const taskName = document.querySelector(`#${taskNameInputId}`).value;
-        const dueDate = document.querySelector(`#${dueDateInputId}`).value;
-        const newTask = generateNewTask(taskName, dueDate, parentId);
-        insertIntoList(newTask, taskList);
-    });
-}
