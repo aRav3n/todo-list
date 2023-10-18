@@ -44,10 +44,6 @@ body {
     font-weight: normal;
 }
 
-#detailItems > label {
-    display: grid;
-}
-
 #detailItems textarea {
     height: 20vh;
     resize: none;
@@ -129,6 +125,7 @@ img + span {
 }
 
 label {
+    display: grid;
     font-weight: bold;
     justify-content: center;
     justify-items: center;
@@ -160,6 +157,20 @@ label > *:focus-visible {
 
 #listOfProjects > div:hover {
     background-color: #00000010;
+}
+
+#newTaskDiv {
+    background-color: #00000010;
+    border-radius: 2vmin;
+    display: grid;
+    gap: 2vh;
+    justify-self: center;
+    padding: 1.5vmin;
+    width: max-content;
+}
+
+#newTaskDiv h2 {
+    justify-content: center;
 }
 
 #projectMenu > h2 {
