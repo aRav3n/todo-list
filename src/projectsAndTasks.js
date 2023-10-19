@@ -4,7 +4,9 @@ import {generateMainContent, generateProjectDetailView} from './domGenerator.js'
 export const projectList = [];
 export const taskList = [];
 const lifeProject = generateNewProject('Life', 'General life tasks', '2200-01-01');
+const lifeTask = generateNewTask('Travel', '2025-04-01','project-1');
 insertIntoList(lifeProject, projectList);
+insertIntoList(lifeTask, taskList);
 
 export function generateNewProject(name, description, dueDate) {
     let completed = false;

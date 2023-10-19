@@ -47,7 +47,7 @@ function generateListOfProjects() {
     const parentDiv = document.querySelector('#listOfProjects');
     let i = 1;
     projectList.forEach(project => {
-        generateSubDiv(project.id, ArrowIcon, project.name, parentDiv);
+        parentDiv.appendChild(generateSubDiv(project.id, ArrowIcon, project.name));
         const clickableSubDiv = document.querySelector(`#${project.id}`);
         clickableSubDiv.addEventListener('click', () => {
             generateProjectDetailView(project);
@@ -83,9 +83,9 @@ export function generateProjectDetailView(project) {
     generateHomeButton(parent);
     let newRow = document.createElement('div');
     newRow.classList.add('spreadOutItems');
-    generateSubDiv('deleteProject', DeleteIcon, 'Delete Project', newRow);
+    newRow.appendChild(generateSubDiv('deleteProject', DeleteIcon, 'Delete Project'));
     const displayDate = format(project.dueDate, 'MM/dd/yyyy');
-    generateSubDiv('', DateGeneralIcon, `Due: ${displayDate}`, newRow);
+    newRow.appendChild(generateSubDiv('', DateGeneralIcon, `Due: ${displayDate}`));
     parent.appendChild(newRow);
     const projectName = document.createElement('h1');
     projectName.innerHTML = project.name;
@@ -141,9 +141,9 @@ function generateStaticContent() {
     highLevelItems.setAttribute('id', 'highLevelItems');
 
     const timeDueSection = document.createElement('div');
-    generateSubDiv('pastDue', DatePastIcon, 'Past Due', timeDueSection);
-    generateSubDiv('todayDue', DateTodayIcon, 'Due Today', timeDueSection);
-    generateSubDiv('soonDue', DateSoonIcon, 'Due Soon', timeDueSection);
+    timeDueSection.appendChild(generateSubDiv('pastDue', DatePastIcon, 'Past Due'));
+    timeDueSection.appendChild(generateSubDiv('todayDue', DateTodayIcon, 'Due Today'));
+    timeDueSection.appendChild(generateSubDiv('soonDue', DateSoonIcon, 'Due Soon'));
 
     const projectMenu = document.createElement('div');
     projectMenu.setAttribute('id', 'projectMenu');
@@ -168,7 +168,7 @@ function generateStaticContent() {
     listenForNewProject();
 };
 
-function generateSubDiv(id, importedIconName, readableWords, parentDiv) {
+function generateSubDiv(id, importedIconName, readableWords) {
     const subDiv = document.createElement('div');
     subDiv.setAttribute('id', id);
     const icon = new Image();
@@ -177,15 +177,17 @@ function generateSubDiv(id, importedIconName, readableWords, parentDiv) {
     const divText = document.createElement('span');
     divText.innerHTML += ` ${readableWords}`;
     subDiv.appendChild(divText);
-    parentDiv.appendChild(subDiv);
+    return subDiv;
 };
 
-function generateTaskDateDisplay(task, parent) {
+function generateTaskDateDisplay(task) {
     const date = format(task.dueDate, 'MM/dd/yyyy');
-    generateSubDiv('', DateGeneralIcon, date, parent);
+    const dateRow = generateSubDiv('', DateGeneralIcon, date);
+    dateRow.classList.add('taskRow');
+    return dateRow;
 };
 
-function generateTaskNameDisplay(project, task, i) {
+function generateTaskNameDisplay(task, i) {
     let taskDiv = document.createElement('div');
     let checkBox = document.createElement('input');
     checkBox.setAttribute('type', 'checkbox');
@@ -194,16 +196,15 @@ function generateTaskNameDisplay(project, task, i) {
     taskDiv.appendChild(checkBox);
     let label = document.createElement('label');
     label.setAttribute('for', id);
+    label.innerHTML = task.name;
+    taskDiv.appendChild(label);
+    taskDiv.classList.add('taskRow');
     return taskDiv;
 };
 
 function generateTaskList(parent, project) {
     const taskDisplaySection = document.createElement('div');
     taskDisplaySection.setAttribute('id', 'taskList');
-    const nameColumn = document.createElement('div');
-    const dateColumn = document.createElement('div');
-    taskDisplaySection.appendChild(nameColumn);
-    taskDisplaySection.appendChild(dateColumn);
     parent.appendChild(taskDisplaySection);
     for (let i = 0; i < taskList.length; i++) {
         let task = taskList[i];
@@ -211,11 +212,9 @@ function generateTaskList(parent, project) {
         let taskComplete = task.completed;
         let projectId = project.id
         if (taskId === projectId && taskComplete === false) {
-            nameColumn.appendChild(generateTaskNameDisplay(project, task, i));
-            generateTaskDateDisplay(task, dateColumn);
+            taskDisplaySection.appendChild(generateTaskNameDisplay(task, i));
+            taskDisplaySection.appendChild(generateTaskDateDisplay(task));
             listenForCompletedTask(task, `checkbox-${i+1}`, project);
         };
     };
-
-
 };

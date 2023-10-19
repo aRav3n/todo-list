@@ -206,6 +206,34 @@ span {
     width: auto;
 }
 
+#taskList {
+    display: grid;
+    background-color: #00000010;
+    border-radius: 1vmin;
+    column-gap: 0;
+    grid-template-columns: 1fr 1fr;
+    justify-self: center;
+    padding: 1vh 1vw;
+    row-gap: .25rem;
+    width: max-content;
+}
+
+#taskList * {
+    align-content: center;
+    align-items: center;
+    font-weight: normal;
+}
+
+#taskList > div {
+    display: flex;
+}
+
+.taskRow img {
+    aspect-ratio: 1 / 1;
+    height: 1.25rem;
+    width: auto;
+}
+
 .validationFailed {
     appearance: none;
     background-color: #ff000044;
