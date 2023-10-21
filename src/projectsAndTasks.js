@@ -7,6 +7,10 @@ const lifeProject = generateNewProject('Life', 'General life tasks', '2200-01-01
 const lifeTask = generateNewTask('Travel', '2025-04-01','project-1');
 insertIntoList(lifeProject, projectList);
 insertIntoList(lifeTask, taskList);
+const taskB = generateNewTask('Task B', '2025-04-01','project-1');
+const taskC = generateNewTask('Task C', '2025-04-01','project-1');
+insertIntoList(taskB, taskList);
+insertIntoList(taskC, taskList);
 
 export function generateNewProject(name, description, dueDate) {
     let completed = false;

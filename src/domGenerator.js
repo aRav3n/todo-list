@@ -21,13 +21,18 @@ function listenForNewProject() {
     generateSectionToCreateNewProject(detailItemsSection);
 };
 
-function generateCompletedTasks() {
-    const parent = document.querySelector('#taskList');
-    const hideButton = generateDivButton('hideTasks', CompletedIcon, 'Hide Completed', clearHiddenTasks);
-    const thisDiv = document.createElement('div');
-    thisDiv.setAttribute('id', 'hiddenTasks');
-    thisDiv.appendChild(hideButton);
-
+function generateCompletedTasks(project) {
+    const parent = document.querySelector('#detailItems');
+    const heading = document.createElement('h2');
+    const hideButton = generateDivButton('hideTasks', CompletedIcon, 'Hide Completed', generateProjectDetailView.bind(null, project));
+    heading.innerHTML = 'Completed Tasks';
+    heading.appendChild(hideButton);
+    parent.appendChild(heading);
+    const completedTaskList = document.createElement('div');
+    completedTaskList.setAttribute('id', 'taskListCompleted');
+    completedTaskList.classList.add('listOfTasks');
+    generateTaskList(completedTaskList, project, true);
+    parent.appendChild(completedTaskList);
 };
 
 function generateDivButton(id, importedIconName, label, functionCalls) {
@@ -104,11 +109,12 @@ export function generateProjectDetailView(project) {
     parent.appendChild(projectDescription);
     const heading = document.createElement('h2');
     heading.innerHTML = 'Current Tasks';
-    heading.appendChild(generateDivButton('showCompletedTasks', CompletedIcon, 'Show Completed', generateCompletedTasks));
-    heading.appendChild(generateDivButton('addTask', AddIcon, 'Add Task', generateSectionToCreateNewTask));
+    heading.appendChild(generateDivButton('showCompletedTasks', CompletedIcon, 'Show Completed', generateCompletedTasks.bind(null, project)));
+    heading.appendChild(generateDivButton('addTask', AddIcon, 'Add Task', generateSectionToCreateNewTask.bind(null, project)));
     parent.appendChild(heading);
     const taskDisplaySection = document.createElement('div');
     taskDisplaySection.setAttribute('id', 'taskList');
+    taskDisplaySection.classList.add('listOfTasks');
     parent.appendChild(taskDisplaySection);
     generateTaskList(taskDisplaySection, project, false);
 };
@@ -129,7 +135,8 @@ function generateSectionToCreateNewProject(parentDiv) {
     parentDiv.appendChild(generateDivButton('saveNewProject', SaveIcon, 'Save', saveNewProject));
 };
 
-function generateSectionToCreateNewTask(parent, project) {
+function generateSectionToCreateNewTask(project) {
+    const parent = document.querySelector('#taskList');
     const newTaskDiv = document.createElement('div');
     newTaskDiv.setAttribute('id', 'newTaskDiv');
     const heading = document.createElement('h2');
@@ -137,9 +144,10 @@ function generateSectionToCreateNewTask(parent, project) {
     newTaskDiv.appendChild(heading);
     newTaskDiv.appendChild(generateNewInputSection('text', 'newTaskName', 'Task Name', 'Y'));
     newTaskDiv.appendChild(generateNewInputSection('date', 'newTaskDueDate', 'Due Date', 'Y'));
-    newTaskDiv.appendChild(generateDivButton('saveNewTask', SaveIcon, 'Save'));
+    newTaskDiv.appendChild(generateDivButton('saveNewTask', SaveIcon, 'Save', saveNewTask.bind(null,'saveNewTask', 'newTaskName', 'newTaskDueDate', project, parent)));
+    clearParentDiv(parent);
+    parent.style.display = 'flex';
     parent.appendChild(newTaskDiv);
-    saveNewTask('saveNewTask', 'newTaskName', 'newTaskDueDate', project);
 };
 
 function generateStaticContent() {
@@ -200,6 +208,7 @@ function generateTaskList(parent, project, completed) {
         let taskComplete = task.completed;
         let projectId = project.id
         if (taskId === projectId && taskComplete === completed) {
+            parent.style.display = 'grid';
             parent.appendChild(generateTaskNameDisplay(task, i, project));
             parent.appendChild(generateTaskDateDisplay(task));
         };
@@ -209,7 +218,11 @@ function generateTaskList(parent, project, completed) {
 function generateTaskNameDisplay(task, i, project) {
     const taskDiv = document.createElement('div');
     const checkBox = new Image();
-    checkBox.src = IncompleteIcon;
+    if (task.completed) {
+        checkBox.src = CompletedIcon;
+    } else {
+        checkBox.src = IncompleteIcon;
+    };
     const id = `checkbox-${i}`;
     checkBox.setAttribute('id', id);
     listenForCompletedTask(task, checkBox, project)

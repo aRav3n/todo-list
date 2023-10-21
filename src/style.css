@@ -159,6 +159,35 @@ label > *:focus-visible {
     background-color: #00000010;
 }
 
+.listOfTasks {
+    background-color: #00000010;
+    border-radius: 1vmin;
+    column-gap: 0;
+    grid-template-columns: 1fr 1fr;
+    justify-content: center;
+    justify-self: center;
+    padding: 1vh 1vw;
+    row-gap: .25rem;
+    width: max-content;
+}
+
+.listOfTasks > .taskRow {
+    border-top: 1px solid #00000031;
+    padding-top: .25rem;
+}
+
+.listOfTasks > .taskRow:first-child,
+.listOfTasks > .taskRow:nth-child(2) {
+    border-top: 1px solid #00000000;
+    padding-top: 0;
+}
+
+.listOfTasks * {
+    align-content: center;
+    align-items: center;
+    font-weight: normal;
+}
+
 #newTaskDiv {
     background-color: #00000010;
     border-radius: 2vmin;
@@ -206,25 +235,12 @@ span {
     width: auto;
 }
 
-#taskList {
-    display: grid;
-    background-color: #00000010;
-    border-radius: 1vmin;
-    column-gap: 0;
-    grid-template-columns: 1fr 1fr;
-    justify-self: center;
-    padding: 1vh 1vw;
-    row-gap: .25rem;
-    width: max-content;
+#taskListCompleted {
+    color: #0000009f;
+    text-decoration: line-through;
 }
 
-#taskList * {
-    align-content: center;
-    align-items: center;
-    font-weight: normal;
-}
-
-#taskList > div {
+.taskRow {
     display: flex;
 }
 
