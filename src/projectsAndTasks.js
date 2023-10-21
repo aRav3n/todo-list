@@ -1,4 +1,4 @@
-import {add, compareAsc, isBefore, isFuture, isPast, isToday, parseISO} from 'date-fns';
+import {add, compareAsc, endOfToday, isBefore, isFuture, isPast, isToday, parseISO} from 'date-fns';
 import {generateMainContent, generateProjectDetailView} from './domGenerator.js';
 
 export const projectList = [];
@@ -6,19 +6,19 @@ export const taskList = [];
 export const taskListPast = [];
 export const taskListSoon = [];
 export const taskListToday = [];
-const lifeProject = generateNewProject('Life', 'General life tasks', '2200-01-01');
-const toDoProject = generateNewProject('ToDo Project', 'Complete the project for TOP before leaving CDMX', '2023-10-22');
-toDoProject.id = 'project-2';
+const lifeProject = generateNewProject('Life', 'General life tasks', '2025-04-01');
 const lifeTask = generateNewTask('Travel', '2025-04-01','project-1');
 insertIntoList(lifeProject, projectList);
-insertIntoList(toDoProject, projectList);
 insertIntoList(lifeTask, taskList);
-const taskB = generateNewTask('Enable past due functionality', '2023-10-22','project-2');
-const taskC = generateNewTask('Enable due today functionality', '2023-10-22','project-2');
-const taskD = generateNewTask('Enable due soon functionality', '2023-10-22','project-2');
-insertIntoList(taskB, taskList);
-insertIntoList(taskC, taskList);
-insertIntoList(taskD, taskList);
+
+function clearArray(array) {
+    if (array.length > 0) {
+        array.pop;
+        clearArray(array);
+    } else {
+        return;
+    };
+};
 
 export function deleteProject(project) {
     const index = projectList.indexOf(project);
@@ -43,9 +43,6 @@ export function insertIntoList(item, list) {
     if (list.length > 1){
         list.sort((a,b) => compareAsc(a.dueDate, b.dueDate));
     };
-    tasksDuePast();
-    tasksDueSoon();
-    tasksDueToday();
 };
 
 export function listenForCompletedTask(task, checkBox, regen) {
@@ -77,22 +74,23 @@ export function saveNewTask(saveButtonId, taskNameInputId, dueDateInputId, proje
             generateProjectDetailView(project);
         };
     });
+    updateSubTaskLists();
 };
 
 function tasksDuePast() {
-    taskListPast.length = 0;
+    clearArray(taskListPast);
     for (let i = 0; i < taskList.length; i++) {
         let task = taskList[i];
         if (!task.completed && isPast(task.dueDate)) {
             taskListPast.push(task);
         };
     };
+    return taskListPast;
 };
 
 function tasksDueSoon() {
-    taskListSoon.length = 0;
-    const date = new Date();
-    const today = parseISO(date);
+    clearArray(taskListSoon);
+    const today = endOfToday();
     const aMonthOut = add(today, {
         days: 1,
         months: 1,
@@ -103,16 +101,18 @@ function tasksDueSoon() {
             taskListSoon.push(task);
         };
     };
+    return taskListSoon;
 };
 
 function tasksDueToday() {
-    taskListToday.length = 0;
+    clearArray(taskListToday);
     for (let i = 0; i < taskList.length; i++) {
         let task = taskList[i];
         if (!task.completed && isToday(task.dueDate)) {
             taskListToday.push(task);
         };
     };
+    return taskListToday;
 };
 
 function updateDateFormatForDateFns(date) {
@@ -121,6 +121,12 @@ function updateDateFormatForDateFns(date) {
     date = correctedFormatDate;
     return date;
 };
+
+export function updateSubTaskLists() {
+    tasksDuePast();
+    tasksDueSoon();
+    tasksDueToday();
+}
 
 // Enter as arguments JavaScript elements, i.e. enter ITEM for const ITEM = document.querySelector....
 function validateRequiredFields() {

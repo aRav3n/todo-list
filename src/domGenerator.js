@@ -10,7 +10,7 @@ import HomeIcon from './images/home.svg';
 import IncompleteIcon from './images/checkbox_blank.svg';
 import SaveIcon from './images/save.svg';
 import SureIcon from './images/help-circle-outline.svg';
-import {deleteProject, listenForCompletedTask, projectList, taskList, saveNewProject, saveNewTask, taskListToday, taskListPast, taskListSoon} from './projectsAndTasks.js';
+import {deleteProject, listenForCompletedTask, projectList, taskList, saveNewProject, saveNewTask, taskListToday, taskListPast, taskListSoon, updateSubTaskLists} from './projectsAndTasks.js';
 import {format} from 'date-fns';
 
 function areYouSureDelete(project) {
@@ -63,7 +63,7 @@ function generateDivButton(id, importedIconName, label, functionCalls) {
         divButton.addEventListener('click', () => {
             arguments[i]();
         });
-    }
+    };
     return divButton;
 };
 
@@ -75,17 +75,14 @@ function generateListOfProjects() {
     const parentDiv = document.querySelector('#listOfProjects');
     let i = 1;
     projectList.forEach(project => {
-        parentDiv.appendChild(generateSubDiv(project.id, ArrowIcon, project.name));
-        const clickableSubDiv = document.querySelector(`#${project.id}`);
-        clickableSubDiv.addEventListener('click', () => {
-            generateProjectDetailView(project);
-        });
+        parentDiv.appendChild(generateSubDiv(project.id, ArrowIcon, project.name, generateProjectDetailView.bind(null, project)));
     });
 };
 
 export function generateMainContent() {
     generateStaticContent();
     generateListOfProjects();
+    updateSubTaskLists();
     generateTaskDisplay();
 };
 
@@ -112,10 +109,7 @@ export function generateProjectDetailView(project) {
     generateHomeButton(parent);
     const newRow = document.createElement('div');
     newRow.setAttribute('id', 'spreadOutItems');
-    const deleteButton = generateSubDiv('deleteProject', DeleteIcon, 'Delete Project');
-    deleteButton.addEventListener('click', () => {
-        areYouSureDelete(project);
-    });
+    const deleteButton = generateSubDiv('deleteProject', DeleteIcon, 'Delete Project', areYouSureDelete.bind(null, project));
     newRow.appendChild(deleteButton);
     const displayDate = format(project.dueDate, 'MM/dd/yyyy');
     newRow.appendChild(generateSubDiv('', DateGeneralIcon, `Due: ${displayDate}`));
@@ -171,9 +165,9 @@ function generateStaticContent() {
     highLevelItems.setAttribute('id', 'highLevelItems');
 
     const timeDueSection = document.createElement('div');
-    timeDueSection.appendChild(generateSubDiv('pastDue', DatePastIcon, 'Past Due'));
-    timeDueSection.appendChild(generateSubDiv('todayDue', DateTodayIcon, 'Due Today'));
-    timeDueSection.appendChild(generateSubDiv('soonDue', DateSoonIcon, 'Due Soon'));
+    timeDueSection.appendChild(generateSubDiv('pastDue', DatePastIcon, 'Past Due', generateTaskDisplay.bind(null, taskListPast, 'Past Due Tasks')));
+    timeDueSection.appendChild(generateSubDiv('todayDue', DateTodayIcon, 'Due Today', generateTaskDisplay.bind(null, taskListToday, "Today's Tasks")));
+    timeDueSection.appendChild(generateSubDiv('soonDue', DateSoonIcon, 'Due Soon', generateTaskDisplay.bind(null, taskListSoon, 'Upcoming Tasks')));
 
     const projectMenu = document.createElement('div');
     projectMenu.setAttribute('id', 'projectMenu');
@@ -197,7 +191,7 @@ function generateStaticContent() {
     body.appendChild(detailItems);
 };
 
-function generateSubDiv(id, importedIconName, readableWords) {
+function generateSubDiv(id, importedIconName, readableWords, functionOnClick) {
     const subDiv = document.createElement('div');
     subDiv.setAttribute('id', id);
     const icon = new Image();
@@ -206,6 +200,9 @@ function generateSubDiv(id, importedIconName, readableWords) {
     const divText = document.createElement('span');
     divText.innerHTML += ` ${readableWords}`;
     subDiv.appendChild(divText);
+    subDiv.addEventListener('click', () => {
+        functionOnClick();
+    });
     return subDiv;
 };
 
@@ -216,22 +213,28 @@ function generateTaskDateDisplay(task) {
     return dateRow;
 };
 
-function generateTaskDisplay() {
+function generateTaskDisplay(arrayToUse, displayText) {
     const parent = document.querySelector('#detailItems');
     clearElement(parent);
     let array = taskListPast;
-    let string = 'Past Due Tasks'
-    if (array.length < 5) {
-        array += taskListToday;
-        string = "Past Due & Today's Tasks"
-    };
-    if (array.length < 5) {
-        array += taskListSoon;
-        string = 'Past Due & Upcoming Tasks'
-    };
-    if (array.length < 5) {
-        array = taskList;
-        string = 'Task List'
+    let string = 'Tasks';
+    if (arguments.length === 0){
+        string = 'Past Due Tasks';
+        if (array.length < 5) {
+            array += taskListToday;
+            string = "Past Due & Today's Tasks"
+        };
+        if (array.length < 5) {
+            array += taskListSoon;
+            string = 'Past Due & Upcoming Tasks'
+        };
+        if (array.length < 5) {
+            array = taskList;
+            string = 'Task List'
+        };
+    } else {
+        string = displayText;
+        array = arrayToUse;
     };
     const heading = document.createElement('h1');
     heading.innerHTML = string;
