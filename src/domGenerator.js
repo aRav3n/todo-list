@@ -194,16 +194,14 @@ function generateTaskDateDisplay(task) {
 };
 
 function generateTaskList(parent, project, completed) {
-    const taskDisplaySection = document.createElement('div');
-    parent.appendChild(taskDisplaySection);
     for (let i = 0; i < taskList.length; i++) {
         let task = taskList[i];
         let taskId = task.parentId;
         let taskComplete = task.completed;
         let projectId = project.id
         if (taskId === projectId && taskComplete === completed) {
-            taskDisplaySection.appendChild(generateTaskNameDisplay(task, i, project));
-            taskDisplaySection.appendChild(generateTaskDateDisplay(task));
+            parent.appendChild(generateTaskNameDisplay(task, i, project));
+            parent.appendChild(generateTaskDateDisplay(task));
         };
     };
 };
