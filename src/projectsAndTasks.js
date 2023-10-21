@@ -20,9 +20,7 @@ function generateNewTask(name, dueDate, parentId) {
 }
 
 export function insertIntoList(item, list) {
-    const oldDate = item.dueDate;
-    const correctedFormatDate = parseISO(oldDate);
-    item.dueDate = correctedFormatDate;
+    item.dueDate = updateDateFormatForDateFns(item.dueDate);
     list.push(item);
     if (list.length > 1){
         list.sort((a,b) => compareAsc(a.dueDate, b.dueDate));
@@ -37,18 +35,15 @@ export function listenForCompletedTask(task, checkboxId, project) {
     });
 }
 
-export function saveNewProject(saveButtonId) {
-    const saveButton = document.querySelector(`#${saveButtonId}`);
-    saveButton.addEventListener('click', () => {
-        const name = document.querySelector('#newProjectName');
-        const dueDate = document.querySelector('#newProjectDate');
-        if (validateRequiredFields(name, dueDate)) {
-            const description = document.querySelector('#newProjectDescription');
-            const newProjectObject = generateNewProject(name.value, description.value, dueDate.value);
-            insertIntoList(newProjectObject, projectList);
-            generateMainContent();
-        };
-    });
+export function saveNewProject() {
+    const name = document.querySelector('#newProjectName');
+    const dueDate = document.querySelector('#newProjectDate');
+    if (validateRequiredFields(name, dueDate)) {
+        const description = document.querySelector('#newProjectDescription');
+        const newProjectObject = generateNewProject(name.value, description.value, dueDate.value);
+        insertIntoList(newProjectObject, projectList);
+        generateMainContent();
+    };
 };
 
 export function saveNewTask(saveButtonId, taskNameInputId, dueDateInputId, project) {
@@ -62,6 +57,13 @@ export function saveNewTask(saveButtonId, taskNameInputId, dueDateInputId, proje
             generateProjectDetailView(project);
         };
     });
+};
+
+function updateDateFormatForDateFns(date) {
+    const oldDate = date;
+    const correctedFormatDate = parseISO(oldDate);
+    date = correctedFormatDate;
+    return date;
 };
 
 // Enter as arguments JavaScript elements, i.e. enter ITEM for const ITEM = document.querySelector....

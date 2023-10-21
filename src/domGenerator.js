@@ -16,14 +16,15 @@ function clearParentDiv(parentDiv) {
 };
 
 function listenForNewProject() {
-    const newProjectButton = document.querySelector('#newProjectButton');
     const detailItemsSection = document.querySelector('#detailItems');
-    newProjectButton.addEventListener('click', () => {
-        generateSectionToCreateNewProject(detailItemsSection);
-    });
+    generateSectionToCreateNewProject(detailItemsSection);
 };
 
-function generateDivButton(id, importedIconName, label) {
+function generateCompletedTasks() {
+
+};
+
+function generateDivButton(id, importedIconName, label, actions) {
     const divButton = document.createElement('div');
     divButton.setAttribute('id', id);
     const icon = new Image();
@@ -33,15 +34,16 @@ function generateDivButton(id, importedIconName, label) {
     divButtonLabel.innerHTML += ` ${label}`;
     divButton.appendChild(divButtonLabel);
     divButton.classList.add('divButton');
+    for (let i = 3; i < arguments.length; i++) {
+        divButton.addEventListener('click', () => {
+            arguments[i]();
+        });
+    }
     return divButton;
 };
 
 function generateHomeButton(parent) {
-    parent.appendChild(generateDivButton('homeButton', HomeIcon, 'Home'));
-    const homeButton = document.querySelector('#homeButton');
-    homeButton.addEventListener('click', () => {
-        generateMainContent();
-    });
+    parent.appendChild(generateDivButton('homeButton', HomeIcon, 'Home', generateMainContent));
 };
 
 function generateListOfProjects() {
@@ -96,11 +98,10 @@ export function generateProjectDetailView(project) {
     parent.appendChild(projectDescription);
     const heading = document.createElement('h2');
     heading.innerHTML = 'Current Tasks';
-    heading.appendChild(generateDivButton('showCompletedTasks', CompletedIcon, 'Show Completed'));
-    heading.appendChild(generateDivButton('addTask', AddIcon, 'Add Task'));
+    heading.appendChild(generateDivButton('showCompletedTasks', CompletedIcon, 'Show Completed', generateCompletedTasks));
+    heading.appendChild(generateDivButton('addTask', AddIcon, 'Add Task', generateSectionToCreateNewTask));
     parent.appendChild(heading);
     generateTaskList(parent, project);
-    generateSectionToCreateNewTask(parent, project, 'addTask');
 };
 
 function generateSectionToCreateNewProject(parentDiv) {
@@ -116,24 +117,20 @@ function generateSectionToCreateNewProject(parentDiv) {
     parentDiv.appendChild(generateNewInputSection('text', 'newProjectName', 'Project Name', 'Y'));
     parentDiv.appendChild(descriptionSection);
     parentDiv.appendChild(generateNewInputSection('date', 'newProjectDate', 'Due Date', 'Y'));
-    parentDiv.appendChild(generateDivButton('saveNewProject', SaveIcon, 'Save'));
-    saveNewProject('saveNewProject');
+    parentDiv.appendChild(generateDivButton('saveNewProject', SaveIcon, 'Save', saveNewProject));
 };
 
-function generateSectionToCreateNewTask(parent, project, buttonId) {
-    const button = document.querySelector(`#${buttonId}`);
-    button.addEventListener('click', () => {
-        const newTaskDiv = document.createElement('div');
-        newTaskDiv.setAttribute('id', 'newTaskDiv');
-        const heading = document.createElement('h2');
-        heading.innerHTML = 'New Task';
-        newTaskDiv.appendChild(heading);
-        newTaskDiv.appendChild(generateNewInputSection('text', 'newTaskName', 'Task Name', 'Y'));
-        newTaskDiv.appendChild(generateNewInputSection('date', 'newTaskDueDate', 'Due Date', 'Y'));
-        newTaskDiv.appendChild(generateDivButton('saveNewTask', SaveIcon, 'Save'));
-        parent.appendChild(newTaskDiv);
-        saveNewTask('saveNewTask', 'newTaskName', 'newTaskDueDate', project);
-    });
+function generateSectionToCreateNewTask(parent, project) {
+    const newTaskDiv = document.createElement('div');
+    newTaskDiv.setAttribute('id', 'newTaskDiv');
+    const heading = document.createElement('h2');
+    heading.innerHTML = 'New Task';
+    newTaskDiv.appendChild(heading);
+    newTaskDiv.appendChild(generateNewInputSection('text', 'newTaskName', 'Task Name', 'Y'));
+    newTaskDiv.appendChild(generateNewInputSection('date', 'newTaskDueDate', 'Due Date', 'Y'));
+    newTaskDiv.appendChild(generateDivButton('saveNewTask', SaveIcon, 'Save'));
+    parent.appendChild(newTaskDiv);
+    saveNewTask('saveNewTask', 'newTaskName', 'newTaskDueDate', project);
 };
 
 function generateStaticContent() {
@@ -155,7 +152,7 @@ function generateStaticContent() {
     projectMenu.appendChild(projectHeadline);
     projectMenu.appendChild(listOfProjects);
 
-    projectMenu.appendChild(generateDivButton('newProjectButton', AddIcon, 'New Project'));
+    projectMenu.appendChild(generateDivButton('newProjectButton', AddIcon, 'New Project', listenForNewProject));
 
     highLevelItems.appendChild(timeDueSection);
     highLevelItems.appendChild(projectMenu);
@@ -166,7 +163,6 @@ function generateStaticContent() {
     body.innerHTML = '';
     body.appendChild(highLevelItems);
     body.appendChild(detailItems);
-    listenForNewProject();
 };
 
 function generateSubDiv(id, importedIconName, readableWords) {
