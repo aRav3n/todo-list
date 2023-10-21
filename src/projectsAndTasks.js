@@ -1,8 +1,11 @@
-import {compareAsc, parseISO} from 'date-fns';
+import {add, compareAsc, isBefore, isFuture, isPast, isToday, parseISO} from 'date-fns';
 import {generateMainContent, generateProjectDetailView} from './domGenerator.js';
 
 export const projectList = [];
 export const taskList = [];
+export const taskListPast = [];
+export const taskListSoon = [];
+export const taskListToday = [];
 const lifeProject = generateNewProject('Life', 'General life tasks', '2200-01-01');
 const lifeTask = generateNewTask('Travel', '2025-04-01','project-1');
 insertIntoList(lifeProject, projectList);
@@ -35,12 +38,15 @@ export function insertIntoList(item, list) {
     if (list.length > 1){
         list.sort((a,b) => compareAsc(a.dueDate, b.dueDate));
     };
+    tasksDuePast();
+    tasksDueSoon();
+    tasksDueToday();
 };
 
-export function listenForCompletedTask(task, checkBox, project) {
+export function listenForCompletedTask(task, checkBox, regen) {
     checkBox.addEventListener('click', () => {
         task.completed = !task.completed;
-        generateProjectDetailView(project);
+        regen();
     });
 }
 
@@ -66,6 +72,42 @@ export function saveNewTask(saveButtonId, taskNameInputId, dueDateInputId, proje
             generateProjectDetailView(project);
         };
     });
+};
+
+function tasksDuePast() {
+    taskListPast.length = 0;
+    for (let i = 0; i < taskList.length; i++) {
+        let task = taskList[i];
+        if (!task.completed && isPast(task.dueDate)) {
+            taskListPast.push(task);
+        };
+    };
+};
+
+function tasksDueSoon() {
+    taskListSoon.length = 0;
+    const date = new Date();
+    const today = parseISO(date);
+    const aMonthOut = add(today, {
+        days: 1,
+        months: 1,
+    });
+    for (let i = 0; i < taskList.length; i++) {
+        let task = taskList[i];
+        if (!task.completed && isFuture(task.dueDate) && isBefore(task.dueDate, aMonthOut)) {
+            taskListSoon.push(task);
+        };
+    };
+};
+
+function tasksDueToday() {
+    taskListToday.length = 0;
+    for (let i = 0; i < taskList.length; i++) {
+        let task = taskList[i];
+        if (!task.completed && isToday(task.dueDate)) {
+            taskListToday.push(task);
+        };
+    };
 };
 
 function updateDateFormatForDateFns(date) {

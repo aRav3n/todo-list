@@ -10,12 +10,12 @@ import HomeIcon from './images/home.svg';
 import IncompleteIcon from './images/checkbox_blank.svg';
 import SaveIcon from './images/save.svg';
 import SureIcon from './images/help-circle-outline.svg';
-import {deleteProject, listenForCompletedTask, projectList, taskList, saveNewProject, saveNewTask} from './projectsAndTasks.js';
+import {deleteProject, listenForCompletedTask, projectList, taskList, saveNewProject, saveNewTask, taskListToday, taskListPast, taskListSoon} from './projectsAndTasks.js';
 import {format} from 'date-fns';
 
 function areYouSureDelete(project) {
     const deleteButton = document.querySelector('#deleteProject');
-    clearParentDiv(deleteButton);
+    clearElement(deleteButton);
     const sureIcon = new Image();
     sureIcon.src = SureIcon;
     deleteButton.appendChild(sureIcon);
@@ -26,7 +26,7 @@ function areYouSureDelete(project) {
     });
 };
 
-function clearParentDiv(parentDiv) {
+function clearElement(parentDiv) {
     parentDiv.innerHTML = ''
 };
 
@@ -45,7 +45,7 @@ function generateCompletedTasks(project) {
     const completedTaskList = document.createElement('div');
     completedTaskList.setAttribute('id', 'taskListCompleted');
     completedTaskList.classList.add('listOfTasks');
-    generateTaskList(completedTaskList, project, true);
+    completedTaskList.appendChild(generateTaskList(project, true, taskList));
     parent.appendChild(completedTaskList);
 };
 
@@ -86,6 +86,7 @@ function generateListOfProjects() {
 export function generateMainContent() {
     generateStaticContent();
     generateListOfProjects();
+    generateTaskDisplay();
 };
 
 function generateNewInputSection(type, id, labelText, required) {
@@ -107,7 +108,7 @@ function generateNewInputSection(type, id, labelText, required) {
 
 export function generateProjectDetailView(project) {
     const parent = document.querySelector('#detailItems');
-    clearParentDiv(parent);
+    clearElement(parent);
     generateHomeButton(parent);
     const newRow = document.createElement('div');
     newRow.setAttribute('id', 'spreadOutItems');
@@ -130,15 +131,11 @@ export function generateProjectDetailView(project) {
     heading.appendChild(generateDivButton('showCompletedTasks', CompletedIcon, 'Show Completed', generateCompletedTasks.bind(null, project)));
     heading.appendChild(generateDivButton('addTask', AddIcon, 'Add Task', generateSectionToCreateNewTask.bind(null, project)));
     parent.appendChild(heading);
-    const taskDisplaySection = document.createElement('div');
-    taskDisplaySection.setAttribute('id', 'taskList');
-    taskDisplaySection.classList.add('listOfTasks');
-    parent.appendChild(taskDisplaySection);
-    generateTaskList(taskDisplaySection, project, false);
+    parent.appendChild(generateTaskList(project, false, taskList));
 };
 
 function generateSectionToCreateNewProject(parentDiv) {
-    clearParentDiv(parentDiv);
+    clearElement(parentDiv);
     const descriptionSection = document.createElement('label');
     descriptionSection.setAttribute('for', 'newProjectDescription');
     descriptionSection.innerHTML = 'Description';
@@ -163,7 +160,7 @@ function generateSectionToCreateNewTask(project) {
     newTaskDiv.appendChild(generateNewInputSection('text', 'newTaskName', 'Task Name', 'Y'));
     newTaskDiv.appendChild(generateNewInputSection('date', 'newTaskDueDate', 'Due Date', 'Y'));
     newTaskDiv.appendChild(generateDivButton('saveNewTask', SaveIcon, 'Save', saveNewTask.bind(null,'saveNewTask', 'newTaskName', 'newTaskDueDate', project, parent)));
-    clearParentDiv(parent);
+    clearElement(parent);
     parent.style.display = 'flex';
     parent.appendChild(newTaskDiv);
 };
@@ -219,21 +216,54 @@ function generateTaskDateDisplay(task) {
     return dateRow;
 };
 
-function generateTaskList(parent, project, completed) {
-    for (let i = 0; i < taskList.length; i++) {
-        let task = taskList[i];
-        let taskId = task.parentId;
-        let taskComplete = task.completed;
-        let projectId = project.id
-        if (taskId === projectId && taskComplete === completed) {
-            parent.style.display = 'grid';
-            parent.appendChild(generateTaskNameDisplay(task, i, project));
-            parent.appendChild(generateTaskDateDisplay(task));
-        };
+function generateTaskDisplay() {
+    const parent = document.querySelector('#detailItems');
+    clearElement(parent);
+    let array = taskListPast;
+    let string = 'Past Due Tasks'
+    if (array.length < 5) {
+        array += taskListToday;
+        string = "Past Due & Today's Tasks"
     };
+    if (array.length < 5) {
+        array += taskListSoon;
+        string = 'Past Due & Upcoming Tasks'
+    };
+    if (array.length < 5) {
+        array = taskList;
+        string = 'Task List'
+    };
+    const heading = document.createElement('h1');
+    heading.innerHTML = string;
+    parent.appendChild(heading);
+    parent.appendChild(generateTaskList('', false, array));
 };
 
-function generateTaskNameDisplay(task, i, project) {
+function generateTaskList(project, completed, array) {
+    const taskDisplaySection = document.createElement('div');
+    taskDisplaySection.setAttribute('id', 'taskList');
+    taskDisplaySection.classList.add('listOfTasks');
+    for (let i = 0; i < array.length; i++) {
+        let task = array[i];
+        let taskId = task.parentId;
+        let taskComplete = task.completed;
+        if (project !== ''){
+            let projectId = project.id
+            if (taskId === projectId && taskComplete === completed) {
+                taskDisplaySection.style.display = 'grid';
+                taskDisplaySection.appendChild(generateTaskNameDisplay(task, i, generateProjectDetailView.bind(null, project)));
+                taskDisplaySection.appendChild(generateTaskDateDisplay(task));
+            };
+        } else if (taskComplete === completed) {
+            taskDisplaySection.style.display = 'grid';
+            taskDisplaySection.appendChild(generateTaskNameDisplay(task, i, generateTaskDisplay));
+            taskDisplaySection.appendChild(generateTaskDateDisplay(task));
+        };
+    };
+    return taskDisplaySection;
+};
+
+function generateTaskNameDisplay(task, i, regen) {
     const taskDiv = document.createElement('div');
     const checkBox = new Image();
     if (task.completed) {
@@ -243,7 +273,7 @@ function generateTaskNameDisplay(task, i, project) {
     };
     const id = `checkbox-${i}`;
     checkBox.setAttribute('id', id);
-    listenForCompletedTask(task, checkBox, project)
+    listenForCompletedTask(task, checkBox, regen);
     taskDiv.appendChild(checkBox);
     let label = document.createElement('label');
     label.setAttribute('for', id);
