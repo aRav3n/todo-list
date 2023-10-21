@@ -1,11 +1,12 @@
-import DeleteIcon from './images/delete.svg';
+import AddIcon from './images/add.svg';
+import ArrowIcon from './images/chevron-forward-outline.svg';
+import CompletedIcon from './images/checkbox-outline.svg';
 import DateTodayIcon from './images/date-today.svg';
 import DateSoonIcon from './images/date-soon.svg';
 import DatePastIcon from './images/date-past.svg';
 import DateGeneralIcon from './images/date-general.svg';
-import ArrowIcon from './images/chevron-forward-outline.svg';
+import DeleteIcon from './images/delete.svg';
 import HomeIcon from './images/home.svg';
-import AddIcon from './images/add.svg';
 import SaveIcon from './images/save.svg';
 import {listenForCompletedTask, projectList, taskList, saveNewProject, saveNewTask} from './projectsAndTasks.js';
 import {format} from 'date-fns';
@@ -22,7 +23,7 @@ function listenForNewProject() {
     });
 };
 
-function generateDivButton(id, importedIconName, label, parentDiv) {
+function generateDivButton(id, importedIconName, label) {
     const divButton = document.createElement('div');
     divButton.setAttribute('id', id);
     const icon = new Image();
@@ -32,11 +33,11 @@ function generateDivButton(id, importedIconName, label, parentDiv) {
     divButtonLabel.innerHTML += ` ${label}`;
     divButton.appendChild(divButtonLabel);
     divButton.classList.add('divButton');
-    parentDiv.appendChild(divButton);
+    return divButton;
 };
 
 function generateHomeButton(parent) {
-    generateDivButton('homeButton', HomeIcon, 'Home', parent);
+    parent.appendChild(generateDivButton('homeButton', HomeIcon, 'Home'));
     const homeButton = document.querySelector('#homeButton');
     homeButton.addEventListener('click', () => {
         generateMainContent();
@@ -95,14 +96,11 @@ export function generateProjectDetailView(project) {
     parent.appendChild(projectDescription);
     const heading = document.createElement('h2');
     heading.innerHTML = 'Current Tasks';
-    generateDivButton('addTask', AddIcon, 'Add Task', heading);
+    heading.appendChild(generateDivButton('showCompletedTasks', CompletedIcon, 'Show Completed'));
+    heading.appendChild(generateDivButton('addTask', AddIcon, 'Add Task'));
     parent.appendChild(heading);
-    const addTaskButton = document.querySelector('#addTask');
-
     generateTaskList(parent, project);
-    addTaskButton.addEventListener('click', () => {
-        generateSectionToCreateNewTask(parent, project);
-    });
+    generateSectionToCreateNewTask(parent, project, 'addTask');
 };
 
 function generateSectionToCreateNewProject(parentDiv) {
@@ -118,21 +116,24 @@ function generateSectionToCreateNewProject(parentDiv) {
     parentDiv.appendChild(generateNewInputSection('text', 'newProjectName', 'Project Name', 'Y'));
     parentDiv.appendChild(descriptionSection);
     parentDiv.appendChild(generateNewInputSection('date', 'newProjectDate', 'Due Date', 'Y'));
-    generateDivButton('saveNewProject', SaveIcon, 'Save', parentDiv);
+    parentDiv.appendChild(generateDivButton('saveNewProject', SaveIcon, 'Save'));
     saveNewProject('saveNewProject');
 };
 
-function generateSectionToCreateNewTask(parent, project) {
-    const newTaskDiv = document.createElement('div');
-    newTaskDiv.setAttribute('id', 'newTaskDiv');
-    const heading = document.createElement('h2');
-    heading.innerHTML = 'New Task';
-    newTaskDiv.appendChild(heading);
-    newTaskDiv.appendChild(generateNewInputSection('text', 'newTaskName', 'Task Name', 'Y'));
-    newTaskDiv.appendChild(generateNewInputSection('date', 'newTaskDueDate', 'Due Date', 'Y'));
-    generateDivButton('saveNewTask', SaveIcon, 'Save', newTaskDiv);
-    parent.appendChild(newTaskDiv);
-    saveNewTask('saveNewTask', 'newTaskName', 'newTaskDueDate', project);
+function generateSectionToCreateNewTask(parent, project, buttonId) {
+    const button = document.querySelector(`#${buttonId}`);
+    button.addEventListener('click', () => {
+        const newTaskDiv = document.createElement('div');
+        newTaskDiv.setAttribute('id', 'newTaskDiv');
+        const heading = document.createElement('h2');
+        heading.innerHTML = 'New Task';
+        newTaskDiv.appendChild(heading);
+        newTaskDiv.appendChild(generateNewInputSection('text', 'newTaskName', 'Task Name', 'Y'));
+        newTaskDiv.appendChild(generateNewInputSection('date', 'newTaskDueDate', 'Due Date', 'Y'));
+        newTaskDiv.appendChild(generateDivButton('saveNewTask', SaveIcon, 'Save'));
+        parent.appendChild(newTaskDiv);
+        saveNewTask('saveNewTask', 'newTaskName', 'newTaskDueDate', project);
+    });
 };
 
 function generateStaticContent() {
@@ -154,7 +155,7 @@ function generateStaticContent() {
     projectMenu.appendChild(projectHeadline);
     projectMenu.appendChild(listOfProjects);
 
-    generateDivButton('newProjectButton', AddIcon, 'New Project', projectMenu);
+    projectMenu.appendChild(generateDivButton('newProjectButton', AddIcon, 'New Project'));
 
     highLevelItems.appendChild(timeDueSection);
     highLevelItems.appendChild(projectMenu);
