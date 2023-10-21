@@ -27,10 +27,9 @@ export function insertIntoList(item, list) {
     };
 };
 
-export function listenForCompletedTask(task, checkboxId, project) {
-    const checkBox = document.querySelector(`#${checkboxId}`);
+export function listenForCompletedTask(task, checkBox, project) {
     checkBox.addEventListener('click', () => {
-        task.completed = true;
+        task.completed = !task.completed;
         generateProjectDetailView(project);
     });
 }
