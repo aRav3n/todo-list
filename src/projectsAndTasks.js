@@ -7,13 +7,18 @@ export const taskListPast = [];
 export const taskListSoon = [];
 export const taskListToday = [];
 const lifeProject = generateNewProject('Life', 'General life tasks', '2200-01-01');
+const toDoProject = generateNewProject('ToDo Project', 'Complete the project for TOP before leaving CDMX', '2023-10-22');
+toDoProject.id = 'project-2';
 const lifeTask = generateNewTask('Travel', '2025-04-01','project-1');
 insertIntoList(lifeProject, projectList);
+insertIntoList(toDoProject, projectList);
 insertIntoList(lifeTask, taskList);
-const taskB = generateNewTask('Task B', '2025-04-01','project-1');
-const taskC = generateNewTask('Task C', '2025-04-01','project-1');
+const taskB = generateNewTask('Enable past due functionality', '2023-10-22','project-2');
+const taskC = generateNewTask('Enable due today functionality', '2023-10-22','project-2');
+const taskD = generateNewTask('Enable due soon functionality', '2023-10-22','project-2');
 insertIntoList(taskB, taskList);
 insertIntoList(taskC, taskList);
+insertIntoList(taskD, taskList);
 
 export function deleteProject(project) {
     const index = projectList.indexOf(project);
