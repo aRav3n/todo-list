@@ -9,8 +9,22 @@ import DeleteIcon from './images/delete.svg';
 import HomeIcon from './images/home.svg';
 import IncompleteIcon from './images/checkbox_blank.svg';
 import SaveIcon from './images/save.svg';
-import {listenForCompletedTask, projectList, taskList, saveNewProject, saveNewTask} from './projectsAndTasks.js';
+import SureIcon from './images/help-circle-outline.svg';
+import {deleteProject, listenForCompletedTask, projectList, taskList, saveNewProject, saveNewTask} from './projectsAndTasks.js';
 import {format} from 'date-fns';
+
+function areYouSureDelete(project) {
+    const deleteButton = document.querySelector('#deleteProject');
+    clearParentDiv(deleteButton);
+    const sureIcon = new Image();
+    sureIcon.src = SureIcon;
+    deleteButton.appendChild(sureIcon);
+    deleteButton.innerHTML += 'Are you sure?';
+    const yesImSure = deleteButton;
+    yesImSure.addEventListener('click', () => {
+        deleteProject(project);
+    });
+};
 
 function clearParentDiv(parentDiv) {
     parentDiv.innerHTML = ''
@@ -95,9 +109,13 @@ export function generateProjectDetailView(project) {
     const parent = document.querySelector('#detailItems');
     clearParentDiv(parent);
     generateHomeButton(parent);
-    let newRow = document.createElement('div');
-    newRow.classList.add('spreadOutItems');
-    newRow.appendChild(generateSubDiv('deleteProject', DeleteIcon, 'Delete Project'));
+    const newRow = document.createElement('div');
+    newRow.setAttribute('id', 'spreadOutItems');
+    const deleteButton = generateSubDiv('deleteProject', DeleteIcon, 'Delete Project');
+    deleteButton.addEventListener('click', () => {
+        areYouSureDelete(project);
+    });
+    newRow.appendChild(deleteButton);
     const displayDate = format(project.dueDate, 'MM/dd/yyyy');
     newRow.appendChild(generateSubDiv('', DateGeneralIcon, `Due: ${displayDate}`));
     parent.appendChild(newRow);

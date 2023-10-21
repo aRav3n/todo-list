@@ -12,6 +12,12 @@ const taskC = generateNewTask('Task C', '2025-04-01','project-1');
 insertIntoList(taskB, taskList);
 insertIntoList(taskC, taskList);
 
+export function deleteProject(project) {
+    const index = projectList.indexOf(project);
+    projectList.splice(index, 1);
+    generateMainContent();
+};
+
 export function generateNewProject(name, description, dueDate) {
     let completed = false;
     const id = `project-${projectList.length + 1}`;

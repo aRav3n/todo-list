@@ -212,12 +212,12 @@ span {
     max-width: 100%;
 }
 
-.spreadOutItems {
+#spreadOutItems {
     display: flex;
     justify-content: space-between;
 }
 
-.spreadOutItems > * {
+#spreadOutItems > * {
     align-content: center;
     align-items: center;
     border: 1px solid #ffffff00;
@@ -229,7 +229,7 @@ span {
     width: auto;
 }
 
-.spreadOutItems img {
+#spreadOutItems img {
     aspect-ratio: 1 / 1;
     height: 1.25rem;
     width: auto;
