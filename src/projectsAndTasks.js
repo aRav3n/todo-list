@@ -1,4 +1,4 @@
-import {add, compareAsc, endOfToday, isBefore, isFuture, isPast, isToday, parseISO} from 'date-fns';
+import {add, compareAsc, endOfToday, format,isBefore, isFuture, isPast, isToday, parseISO} from 'date-fns';
 import {generateMainContent, generateProjectDetailView} from './domGenerator.js';
 
 export const projectList = [];
@@ -11,15 +11,6 @@ const lifeTask = generateNewTask('Travel', '2025-04-01','project-1');
 insertIntoList(lifeProject, projectList);
 insertIntoList(lifeTask, taskList);
 
-function clearArray(array) {
-    if (array.length > 0) {
-        for (let i = array.length - 1; i > -1; i --) {
-        array.pop;
-        };
-    } else {
-        return;
-    };
-};
 
 export function deleteProject(project) {
     const index = projectList.indexOf(project);
@@ -53,10 +44,12 @@ function generateNewTask(name, dueDate, parentId) {
 export function insertIntoList(item, list) {
     item.dueDate = updateDateFormatForDateFns(item.dueDate);
     list.push(item);
-    console.log(taskList);
     if (list.length > 1){
         list.sort((a,b) => compareAsc(a.dueDate, b.dueDate));
     };
+    console.log(item.dueDate);
+    console.log(list);
+    localStorageSet(list);
     updateSubTaskLists();
 };
 
@@ -67,18 +60,28 @@ export function listenForCompletedTask(task, checkBox, regen) {
     });
 };
 
-function localStorageGet(arrayToPopulate, projectOrTask) {
-    let string = `${projectOrTask.toLowerCase()}-`;
-    let startingNumber = arrayToPopulate.length + 1;
-    
+export function localStorageGet(arrayToPopulate, projectOrTask) {
+    const string = `${projectOrTask.toLowerCase()}-`;
+    let number = arrayToPopulate.length + 1;
+    let idString = string + number;
+    if (JSON.parse(localStorage.getItem(idString))) {
+        const newObject = JSON.parse(localStorage.getItem(idString));
+        const date = new Date(newObject.dueDate);
+        newObject.dueDate = date;
+        insertIntoList(newObject, arrayToPopulate);
+        localStorageGet(arrayToPopulate, projectOrTask);
+    };
 };
 
 function localStorageSet(array) {
     if (storageAvailable()) {
-        for (let i = 1; i < array.length; i++) {
+        for (let i = 0; i < array.length; i++) {
             let name = array[i].id;
             let object = array[i];
             if (!JSON.parse(localStorage.getItem(name))){
+                const newDateFormat = new Date(object.dueDate);
+                console.log(newDateFormat);
+                object.dueDate = newDateFormat;
                 localStorage.setItem(name, JSON.stringify(object));
             };
         };
@@ -92,8 +95,10 @@ export function saveNewProject() {
     const dueDate = document.querySelector('#newProjectDate');
     if (validateRequiredFields(name, dueDate)) {
         const description = document.querySelector('#newProjectDescription');
-        const newProjectObject = generateNewProject(name.value, description.value, dueDate.value);
+        const newProjectObject = generateNewProject(name.value, description.value, format(parseISO(dueDate.value), 'yyyy-MM-dd HH:mm:ss.SSSX'));
+        console.log(newProjectObject);
         insertIntoList(newProjectObject, projectList);
+        console.log(projectList);
         generateMainContent();
     };
 };
@@ -104,7 +109,7 @@ export function saveNewTask(saveButtonId, taskNameInputId, dueDateInputId, proje
         const name = document.querySelector(`#${taskNameInputId}`);
         const dueDate = document.querySelector(`#${dueDateInputId}`);
         if (validateRequiredFields(name, dueDate)) {
-            const newTask = generateNewTask(name.value, dueDate.value, project.id);
+            const newTask = generateNewTask(name.value, format(parseISO(dueDate.value), 'yyyy-MM-dd HH:mm:ss.SSSX'), project.id);
             insertIntoList(newTask, taskList);
             generateProjectDetailView(project);
         };
