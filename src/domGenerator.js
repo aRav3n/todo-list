@@ -10,7 +10,7 @@ import HomeIcon from './images/home.svg';
 import IncompleteIcon from './images/checkbox_blank.svg';
 import SaveIcon from './images/save.svg';
 import SureIcon from './images/help-circle-outline.svg';
-import {deleteProject, listenForCompletedTask, projectList, taskList, saveNewProject, saveNewTask, taskListToday, taskListPast, taskListSoon, updateSubTaskLists} from './projectsAndTasks.js';
+import {deleteProject, listenForCompletedTask, projectList, taskList, saveNewProject, saveNewTask, taskListToday, taskListPast, taskListSoon} from './projectsAndTasks.js';
 import {format} from 'date-fns';
 
 function areYouSureDelete(project) {
@@ -82,7 +82,6 @@ function generateListOfProjects() {
 export function generateMainContent() {
     generateStaticContent();
     generateListOfProjects();
-    updateSubTaskLists();
     generateTaskDisplay();
 };
 
@@ -221,11 +220,11 @@ function generateTaskDisplay(arrayToUse, displayText) {
     if (arguments.length === 0){
         string = 'Past Due Tasks';
         if (array.length < 5) {
-            array += taskListToday;
+            array.concat(taskListToday);
             string = "Past Due & Today's Tasks"
         };
         if (array.length < 5) {
-            array += taskListSoon;
+            array.concat(taskListSoon);
             string = 'Past Due & Upcoming Tasks'
         };
         if (array.length < 5) {

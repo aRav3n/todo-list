@@ -13,8 +13,9 @@ insertIntoList(lifeTask, taskList);
 
 function clearArray(array) {
     if (array.length > 0) {
+        for (let i = array.length - 1; i > -1; i --) {
         array.pop;
-        clearArray(array);
+        };
     } else {
         return;
     };
@@ -23,7 +24,18 @@ function clearArray(array) {
 export function deleteProject(project) {
     const index = projectList.indexOf(project);
     projectList.splice(index, 1);
+    deleteTasks(project)
     generateMainContent();
+};
+
+function deleteTasks(project) {
+    const parentId = project.id;
+    for (let i = 0; i < taskList.length; i++) {
+        if (taskList[i].parentId === parentId) {
+            taskList.splice(index, 1);
+            updateSubTaskLists();
+        };
+    };
 };
 
 export function generateNewProject(name, description, dueDate) {
@@ -41,10 +53,11 @@ function generateNewTask(name, dueDate, parentId) {
 export function insertIntoList(item, list) {
     item.dueDate = updateDateFormatForDateFns(item.dueDate);
     list.push(item);
-    console.log(item.name, item.id);
+    console.log(taskList);
     if (list.length > 1){
         list.sort((a,b) => compareAsc(a.dueDate, b.dueDate));
     };
+    updateSubTaskLists();
 };
 
 export function listenForCompletedTask(task, checkBox, regen) {
@@ -96,7 +109,6 @@ export function saveNewTask(saveButtonId, taskNameInputId, dueDateInputId, proje
             generateProjectDetailView(project);
         };
     });
-    updateSubTaskLists();
 };
 
 // Source: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
@@ -129,18 +141,17 @@ function storageAvailable() {
 };  
 
 function tasksDuePast() {
-    clearArray(taskListPast);
+    taskListPast.length = 0;
     for (let i = 0; i < taskList.length; i++) {
         let task = taskList[i];
         if (!task.completed && isPast(task.dueDate)) {
             taskListPast.push(task);
         };
     };
-    return taskListPast;
 };
 
 function tasksDueSoon() {
-    clearArray(taskListSoon);
+    taskListSoon.length = 0;
     const today = endOfToday();
     const aMonthOut = add(today, {
         days: 1,
@@ -152,18 +163,16 @@ function tasksDueSoon() {
             taskListSoon.push(task);
         };
     };
-    return taskListSoon;
 };
 
 function tasksDueToday() {
-    clearArray(taskListToday);
+    taskListToday.length = 0;
     for (let i = 0; i < taskList.length; i++) {
         let task = taskList[i];
         if (!task.completed && isToday(task.dueDate)) {
             taskListToday.push(task);
         };
     };
-    return taskListToday;
 };
 
 function updateDateFormatForDateFns(date) {
