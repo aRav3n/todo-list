@@ -10,8 +10,8 @@ import HomeIcon from './images/home.svg';
 import IncompleteIcon from './images/checkbox_blank.svg';
 import SaveIcon from './images/save.svg';
 import SureIcon from './images/help-circle-outline.svg';
-import {deleteProject, listenForCompletedTask, projectList, taskList, saveNewProject, saveNewTask, taskListToday, taskListPast, taskListSoon} from './projectsAndTasks.js';
-import {format, parseISO} from 'date-fns';
+import {deleteProject, listenForCompletedTask, localStorageGet, projectList, taskList, saveNewProject, saveNewTask, taskListToday, taskListPast, taskListSoon} from './projectsAndTasks.js';
+import {format} from 'date-fns';
 
 function areYouSureDelete(project) {
     const deleteButton = document.querySelector('#deleteProject');
@@ -80,6 +80,8 @@ function generateListOfProjects() {
 };
 
 export function generateMainContent() {
+    localStorageGet(projectList, 'project');
+    localStorageGet(taskList, 'task');
     generateStaticContent();
     generateListOfProjects();
     generateTaskDisplay();

@@ -1,4 +1,4 @@
-import {add, compareAsc, endOfToday, format,isBefore, isFuture, isPast, isToday, parseISO} from 'date-fns';
+import {add, compareAsc, endOfToday, isBefore, isFuture, isPast, isToday, parseISO} from 'date-fns';
 import {generateMainContent, generateProjectDetailView} from './domGenerator.js';
 
 export const projectList = [];
@@ -6,7 +6,7 @@ export const taskList = [];
 export const taskListPast = [];
 export const taskListSoon = [];
 export const taskListToday = [];
-const lifeProject = generateNewProject('Life', 'General life tasks', '2025-04-01');
+const lifeProject = generateNewProject('Life', 'General life tasks', '2300-04-01');
 const lifeTask = generateNewTask('Travel', '2025-04-01','project-1');
 insertIntoList(lifeProject, projectList);
 insertIntoList(lifeTask, taskList);
@@ -29,26 +29,25 @@ function deleteTasks(project) {
     };
 };
 
-export function generateNewProject(name, description, dueDate) {
+function generateNewProject(name, description, dueDate) {
     let completed = false;
     const id = `project-${projectList.length + 1}`;
+    dueDate = updateDateFormatForDateFns(dueDate);
     return {name, description, dueDate, id, completed};
 };
 
 function generateNewTask(name, dueDate, parentId) {
     let completed = false;
     const id = `task-${taskList.length+1}`;
+    dueDate = updateDateFormatForDateFns(dueDate);
     return {name, dueDate, parentId, completed, id};
 }
 
-export function insertIntoList(item, list) {
-    item.dueDate = updateDateFormatForDateFns(item.dueDate);
+function insertIntoList(item, list) {
     list.push(item);
     if (list.length > 1){
         list.sort((a,b) => compareAsc(a.dueDate, b.dueDate));
     };
-    console.log(item.dueDate);
-    console.log(list);
     localStorageSet(list);
     updateSubTaskLists();
 };
@@ -79,9 +78,6 @@ function localStorageSet(array) {
             let name = array[i].id;
             let object = array[i];
             if (!JSON.parse(localStorage.getItem(name))){
-                const newDateFormat = new Date(object.dueDate);
-                console.log(newDateFormat);
-                object.dueDate = newDateFormat;
                 localStorage.setItem(name, JSON.stringify(object));
             };
         };
@@ -95,10 +91,8 @@ export function saveNewProject() {
     const dueDate = document.querySelector('#newProjectDate');
     if (validateRequiredFields(name, dueDate)) {
         const description = document.querySelector('#newProjectDescription');
-        const newProjectObject = generateNewProject(name.value, description.value, format(parseISO(dueDate.value), 'yyyy-MM-dd HH:mm:ss.SSSX'));
-        console.log(newProjectObject);
+        const newProjectObject = generateNewProject(name.value, description.value, dueDate.value);
         insertIntoList(newProjectObject, projectList);
-        console.log(projectList);
         generateMainContent();
     };
 };
@@ -109,7 +103,7 @@ export function saveNewTask(saveButtonId, taskNameInputId, dueDateInputId, proje
         const name = document.querySelector(`#${taskNameInputId}`);
         const dueDate = document.querySelector(`#${dueDateInputId}`);
         if (validateRequiredFields(name, dueDate)) {
-            const newTask = generateNewTask(name.value, format(parseISO(dueDate.value), 'yyyy-MM-dd HH:mm:ss.SSSX'), project.id);
+            const newTask = generateNewTask(name.value, dueDate.value, project.id);
             insertIntoList(newTask, taskList);
             generateProjectDetailView(project);
         };
@@ -187,7 +181,7 @@ function updateDateFormatForDateFns(date) {
     return date;
 };
 
-export function updateSubTaskLists() {
+function updateSubTaskLists() {
     tasksDuePast();
     tasksDueSoon();
     tasksDueToday();
