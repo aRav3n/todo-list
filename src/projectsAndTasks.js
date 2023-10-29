@@ -99,15 +99,13 @@ export function saveNewProject() {
 
 export function saveNewTask(saveButtonId, taskNameInputId, dueDateInputId, project) {
     const saveButton = document.querySelector(`#${saveButtonId}`);
-    saveButton.addEventListener('click', () => {
-        const name = document.querySelector(`#${taskNameInputId}`);
-        const dueDate = document.querySelector(`#${dueDateInputId}`);
-        if (validateRequiredFields(name, dueDate)) {
-            const newTask = generateNewTask(name.value, dueDate.value, project.id);
-            insertIntoList(newTask, taskList);
-            generateProjectDetailView(project);
-        };
-    });
+    const name = document.querySelector(`#${taskNameInputId}`);
+    const dueDate = document.querySelector(`#${dueDateInputId}`);
+    if (validateRequiredFields(name, dueDate)) {
+        const newTask = generateNewTask(name.value, dueDate.value, project.id);
+        insertIntoList(newTask, taskList);
+        generateProjectDetailView(project);
+    };
 };
 
 // Source: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
