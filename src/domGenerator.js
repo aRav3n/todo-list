@@ -10,8 +10,10 @@ import HomeIcon from './images/home.svg';
 import IncompleteIcon from './images/checkbox_blank.svg';
 import SaveIcon from './images/save.svg';
 import SureIcon from './images/help-circle-outline.svg';
-import {deleteProject, listenTaskComplete, localStorageGet, projectList, taskList, saveNewProject, saveNewTask, taskListToday, taskListPast, taskListSoon} from './projectsAndTasks.js';
+import {deleteProject, itemLists, listenTaskComplete, localStorageGet, saveNewProject, saveNewTask, taskListToday, taskListPast, taskListSoon} from './projectsAndTasks.js';
 import {format} from 'date-fns';
+const projectList = itemLists.project;
+const taskList = itemLists.task;
 
 const areYouSure = function areYouSureDelete(project) {
     const deleteButton = document.querySelector('#deleteProject');
@@ -200,9 +202,11 @@ const subDiv = function generateSubDiv(id, importedIconName, readableWords, func
     const divText = document.createElement('span');
     divText.innerHTML += ` ${readableWords}`;
     subDiv.appendChild(divText);
-    subDiv.addEventListener('click', () => {
-        functionOnClick();
-    });
+    if (arguments.length > 3) {
+        subDiv.addEventListener('click', () => {
+            functionOnClick();
+        });
+    };
     return subDiv;
 };
 
