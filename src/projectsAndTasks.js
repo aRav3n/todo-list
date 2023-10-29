@@ -1,5 +1,5 @@
 import {add, compareAsc, endOfToday, isBefore, isFuture, isPast, isToday, parseISO} from 'date-fns';
-import {generateMainContent, generateProjectDetailView} from './domGenerator.js';
+import {mainContent, projectDetail} from './domGenerator.js';
 
 export const projectList = [];
 export const taskList = [];
@@ -16,7 +16,7 @@ export function deleteProject(project) {
     const index = projectList.indexOf(project);
     projectList.splice(index, 1);
     deleteTasks(project)
-    generateMainContent();
+    mainContent();
 };
 
 function deleteTasks(project) {
@@ -52,7 +52,7 @@ function insertIntoList(item, list) {
     updateSubTaskLists();
 };
 
-export function listenForCompletedTask(task, checkBox, regen) {
+export const listenTaskComplete = function listenForCompletedTask(task, checkBox, regen) {
     checkBox.addEventListener('click', () => {
         task.completed = !task.completed;
         regen();
@@ -93,7 +93,7 @@ export function saveNewProject() {
         const description = document.querySelector('#newProjectDescription');
         const newProjectObject = generateNewProject(name.value, description.value, dueDate.value);
         insertIntoList(newProjectObject, projectList);
-        generateMainContent();
+        mainContent();
     };
 };
 
@@ -104,7 +104,7 @@ export function saveNewTask(saveButtonId, taskNameInputId, dueDateInputId, proje
     if (validateRequiredFields(name, dueDate)) {
         const newTask = generateNewTask(name.value, dueDate.value, project.id);
         insertIntoList(newTask, taskList);
-        generateProjectDetailView(project);
+        projectDetail(project);
     };
 };
 
