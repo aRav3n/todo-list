@@ -1,4 +1,13 @@
-import {add, compareAsc, endOfToday, isBefore, isFuture, isPast, isToday, parseISO} from 'date-fns';
+import {
+    add,
+    compareAsc,
+    endOfToday,
+    isBefore,
+    isFuture,
+    isPast,
+    isToday,
+    parseISO
+} from 'date-fns';
 import {mainContent, projectDetail} from './domGenerator.js';
 
 export const itemLists = {
