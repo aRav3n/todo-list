@@ -20,7 +20,7 @@ import {
     taskListToday,
     taskListPast,
     taskListSoon
-} from './projectsAndTasks.js';
+} from './projectsAndTasks';
 import {format} from 'date-fns';
 const projectList = itemLists.project;
 const taskList = itemLists.task;

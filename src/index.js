@@ -1,5 +1,5 @@
 import './style.css';
-import {mainContent} from './domGenerator.js';
+import {mainContent} from './domGenerator';
 
 window.addEventListener('DOMContentLoaded', () => {
     mainContent();
