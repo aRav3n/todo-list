@@ -21,7 +21,7 @@ import {
     taskListPast,
     taskListSoon
 } from './projectsAndTasks';
-import {format} from 'date-fns';
+import  { format } from 'date-fns';
 const projectList = itemLists.project;
 const taskList = itemLists.task;
 
